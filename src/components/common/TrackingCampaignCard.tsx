@@ -1,7 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/theme/colors';
+import { radius } from '@/theme/radius';
+import { shadows } from '@/theme/shadows';
 import { spacing } from '@/theme/spacing';
-import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { TagPill } from '@/components/common/SurfaceCard';
 import { ProgressSteps } from '@/components/common/ProgressSteps';
 import type { TrackedCampaign } from '@/types/tracking';
 
@@ -21,70 +24,166 @@ export function TrackingCampaignCard({
   const statusTag = getStatusTag(campaign.status);
 
   return (
-    <Pressable onPress={onPress}>
-      <SurfaceCard>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.wrapper, pressed && styles.pressed]}>
+      <LinearGradient colors={['#FFFFFF', '#F7F9FC']} style={styles.card}>
         <View style={styles.topRow}>
-          <Text style={styles.bank}>{campaign.bankName}</Text>
+          <View style={styles.bankWrap}>
+            <Text style={styles.bank}>{campaign.bankName}</Text>
+            <Text style={styles.bankSubline}>{campaign.deadlineText}</Text>
+          </View>
           <TagPill tag={statusTag} />
         </View>
 
         <Text style={styles.title}>{campaign.title}</Text>
         <Text style={styles.description}>{campaign.shortDescription}</Text>
 
-        <View style={styles.progressWrap}>
+        <View style={styles.progressShell}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>İlerleme durumu</Text>
+            <Text style={styles.progressValue}>
+              {campaign.progressCurrent}/{campaign.progressTarget}
+            </Text>
+          </View>
           <ProgressSteps current={campaign.progressCurrent} total={campaign.progressTarget} />
         </View>
 
-        <View style={styles.bottomRow}>
-          <Text style={styles.reward}>{campaign.rewardText}</Text>
-          <Text style={styles.deadline}>{campaign.deadlineText}</Text>
+        <View style={styles.nextActionCard}>
+          <Text style={styles.nextActionLabel}>Sonraki adım</Text>
+          <Text style={styles.nextActionText}>{campaign.nextActionText}</Text>
         </View>
-      </SurfaceCard>
+
+        <View style={styles.bottomRow}>
+          <View style={styles.bottomMeta}>
+            <Text style={styles.bottomLabel}>Ödül</Text>
+            <Text style={styles.reward}>{campaign.rewardText}</Text>
+          </View>
+          <View style={styles.bottomMetaRight}>
+            <Text style={styles.bottomLabel}>Durum</Text>
+            <Text style={styles.deadline}>{campaign.deadlineText}</Text>
+          </View>
+        </View>
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    borderRadius: radius.xl,
+  },
+  pressed: {
+    transform: [{ scale: 0.992 }],
+    opacity: 0.97,
+  },
+  card: {
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: '#E4EAF2',
+    padding: spacing.xl,
+    gap: spacing.lg,
+    ...shadows.card,
+  },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    alignItems: 'flex-start',
+    gap: spacing.md,
+  },
+  bankWrap: {
+    flex: 1,
+    gap: 2,
   },
   bank: {
     color: colors.primary,
-    fontWeight: '700',
+    fontWeight: '800',
     fontSize: 13,
+  },
+  bankSubline: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
   title: {
     color: colors.navy,
-    fontWeight: '800',
-    fontSize: 18,
-    lineHeight: 24,
-    marginBottom: 8,
+    fontWeight: '900',
+    fontSize: 22,
+    lineHeight: 30,
   },
   description: {
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 21,
   },
-  progressWrap: {
-    marginTop: spacing.lg,
+  progressShell: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressLabel: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  progressValue: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  nextActionCard: {
+    backgroundColor: '#FFF6E8',
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: 4,
+  },
+  nextActionLabel: {
+    color: colors.warning,
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+  },
+  nextActionText: {
+    color: colors.navy,
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '700',
   },
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: spacing.lg,
+    alignItems: 'flex-start',
+    gap: spacing.md,
+  },
+  bottomMeta: {
+    flex: 1,
+    gap: 4,
+  },
+  bottomMetaRight: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  bottomLabel: {
+    color: colors.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
   reward: {
     color: colors.success,
-    fontWeight: '800',
-    fontSize: 15,
+    fontWeight: '900',
+    fontSize: 18,
   },
   deadline: {
-    color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    color: colors.navy,
+    fontSize: 14,
+    fontWeight: '800',
+    textAlign: 'right',
   },
 });
