@@ -1,19 +1,25 @@
 import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
-import { spacing } from '@/theme/spacing';
 
-type TabMarkerProps = {
+type TabItemProps = {
   label: string;
   focused: boolean;
+  icon: keyof typeof Ionicons.glyphMap;
 };
 
-function TabMarker({ label, focused }: TabMarkerProps) {
+function TabItem({ label, focused, icon }: TabItemProps) {
   return (
-    <View style={styles.tabItem}>
-      <View style={[styles.tabIndicator, focused && styles.tabIndicatorActive]} />
-      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
+    <View style={[styles.tabItem, focused && styles.tabItemFocused]}>
+      <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+        {focused ? <View style={styles.iconGlow} /> : null}
+        <Ionicons name={icon} size={20} color={focused ? '#FFFFFF' : colors.textMuted} style={styles.icon} />
+      </View>
+      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]} numberOfLines={1}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -31,35 +37,35 @@ export default function TabsLayout() {
         name="for-you"
         options={{
           title: 'Senin İçin',
-          tabBarIcon: ({ focused }) => <TabMarker label="Senin İçin" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabItem label="Senin İçin" focused={focused} icon="star-outline" />,
         }}
       />
       <Tabs.Screen
         name="discover"
         options={{
           title: 'Keşfet',
-          tabBarIcon: ({ focused }) => <TabMarker label="Keşfet" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabItem label="Keşfet" focused={focused} icon="compass-outline" />,
         }}
       />
       <Tabs.Screen
         name="tracking"
         options={{
           title: 'Takip',
-          tabBarIcon: ({ focused }) => <TabMarker label="Takip" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabItem label="Takip" focused={focused} icon="checkbox-outline" />,
         }}
       />
       <Tabs.Screen
         name="credit"
         options={{
           title: 'Kredi',
-          tabBarIcon: ({ focused }) => <TabMarker label="Kredi" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabItem label="Kredi" focused={focused} icon="cash-outline" />,
         }}
       />
       <Tabs.Screen
         name="wallet"
         options={{
           title: 'Cüzdanım',
-          tabBarIcon: ({ focused }) => <TabMarker label="Cüzdanım" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabItem label="Cüzdanım" focused={focused} icon="wallet-outline" />,
         }}
       />
     </Tabs>
@@ -68,34 +74,62 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 82,
-    paddingTop: 10,
-    paddingBottom: 12,
-    borderTopColor: colors.border,
-    backgroundColor: colors.surface,
+    height: 92,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderTopWidth: 0,
+    backgroundColor: '#FDFEFF',
+    shadowColor: '#0F1A2B',
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: -6 },
+    elevation: 12,
   },
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    minWidth: 64,
+    gap: 1,
+    minWidth: 66,
+    paddingTop: 6,
   },
-  tabIndicator: {
-    width: 20,
-    height: 4,
-    borderRadius: radius.pill,
+  tabItemFocused: {
+    transform: [{ translateY: -4 }],
+  },
+  iconWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'transparent',
+    position: 'relative',
   },
-  tabIndicatorActive: {
+  iconWrapActive: {
     backgroundColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  iconGlow: {
+    position: 'absolute',
+    inset: 0,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  icon: {
+    zIndex: 1,
   },
   tabLabel: {
     color: colors.textMuted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     textAlign: 'center',
+    maxWidth: 68,
   },
   tabLabelActive: {
-    color: colors.primary,
+    color: colors.navy,
+    fontWeight: '800',
   },
 });
