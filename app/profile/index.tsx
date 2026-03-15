@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -42,56 +43,66 @@ export default function ProfileScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Profil" subtitle="Kullanıcı ayarları ve hesap yönetimi." />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Profil" subtitle="Kullanıcı ayarları ve hesap yönetimi." />
+      </AnimatedEntrance>
 
-      <View style={styles.hero}>
-        <Text style={styles.heroName}>{userProfile.fullName}</Text>
-        <Text style={styles.heroMeta}>{userProfile.email}</Text>
-        <Text style={styles.heroMeta}>{userProfile.phone}</Text>
-        <Text style={styles.joinedText}>{userProfile.joinedLabel}</Text>
-      </View>
-
-      <SurfaceCard>
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProfile.totalCards}</Text>
-            <Text style={styles.statLabel}>Kart</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProfile.activeTrackingCount}</Text>
-            <Text style={styles.statLabel}>Aktif Takip</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProfile.monthlyPotentialText}</Text>
-            <Text style={styles.statLabel}>Potansiyel</Text>
-          </View>
+      <AnimatedEntrance delay={50}>
+        <View style={styles.hero}>
+          <Text style={styles.heroName}>{userProfile.fullName}</Text>
+          <Text style={styles.heroMeta}>{userProfile.email}</Text>
+          <Text style={styles.heroMeta}>{userProfile.phone}</Text>
+          <Text style={styles.joinedText}>{userProfile.joinedLabel}</Text>
         </View>
-      </SurfaceCard>
+      </AnimatedEntrance>
 
-      {profileMenuGroups.map((group) => (
-        <View key={group.id} style={styles.listSection}>
-          <Text style={styles.sectionTitle}>{group.title}</Text>
-          {group.items.map((item) => {
-            const itemRoute = 'route' in item ? item.route : undefined;
+      <AnimatedEntrance delay={100}>
+        <SurfaceCard>
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProfile.totalCards}</Text>
+              <Text style={styles.statLabel}>Kart</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProfile.activeTrackingCount}</Text>
+              <Text style={styles.statLabel}>Aktif Takip</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProfile.monthlyPotentialText}</Text>
+              <Text style={styles.statLabel}>Potansiyel</Text>
+            </View>
+          </View>
+        </SurfaceCard>
+      </AnimatedEntrance>
 
-            return (
-              <Pressable key={item.id} onPress={() => (itemRoute ? router.push(itemRoute as never) : undefined)}>
-                <SurfaceCard>
-                  <View style={styles.itemTopRow}>
-                    <Text style={styles.itemTitle}>{item.title}</Text>
-                    {itemRoute ? <TagPill tag={{ id: item.id, label: 'Aç', tone: 'info' }} /> : null}
-                  </View>
-                  <Text style={styles.itemDescription}>{item.description}</Text>
-                </SurfaceCard>
-              </Pressable>
-            );
-          })}
-        </View>
+      {profileMenuGroups.map((group, groupIndex) => (
+        <AnimatedEntrance key={group.id} delay={150 + groupIndex * 45}>
+          <View style={styles.listSection}>
+            <Text style={styles.sectionTitle}>{group.title}</Text>
+            {group.items.map((item) => {
+              const itemRoute = 'route' in item ? item.route : undefined;
+
+              return (
+                <Pressable key={item.id} style={({ pressed }) => [pressed && styles.pressablePressed]} onPress={() => (itemRoute ? router.push(itemRoute as never) : undefined)}>
+                  <SurfaceCard>
+                    <View style={styles.itemTopRow}>
+                      <Text style={styles.itemTitle}>{item.title}</Text>
+                      {itemRoute ? <TagPill tag={{ id: item.id, label: 'Aç', tone: 'info' }} /> : null}
+                    </View>
+                    <Text style={styles.itemDescription}>{item.description}</Text>
+                  </SurfaceCard>
+                </Pressable>
+              );
+            })}
+          </View>
+        </AnimatedEntrance>
       ))}
 
-      <Pressable style={styles.logoutButton}>
-        <Text style={styles.logoutText}>Çıkış Yap</Text>
-      </Pressable>
+      <AnimatedEntrance delay={320}>
+        <Pressable style={({ pressed }) => [styles.logoutButton, pressed && styles.pressablePressed]}>
+          <Text style={styles.logoutText}>Çıkış Yap</Text>
+        </Pressable>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }
@@ -172,5 +183,9 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontWeight: '800',
     fontSize: 16,
+  },
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
 });

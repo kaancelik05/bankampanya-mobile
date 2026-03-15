@@ -1,5 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -28,63 +29,80 @@ export default function WalletScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Cüzdanım" subtitle="Kartlarını yönet, sana uygun fırsatları daha doğru gösterelim." showBackButton={false} />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Cüzdanım" subtitle="Kartlarını yönet, sana uygun fırsatları daha doğru gösterelim." showBackButton={false} />
+      </AnimatedEntrance>
 
       {isLoading ? <StateCard title="Yükleniyor" description="Kartların hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Kartlar alınamadı" description="Cüzdan bilgileri şu an yüklenemedi." tone="danger" /> : null}
 
-      <View style={styles.listSection}>
-        <Text style={styles.sectionTitle}>Kartların</Text>
-        {walletCards.map((card) => {
-          const isTogglePending = toggleWalletCardStatusMutation.isPending && toggleWalletCardStatusMutation.variables?.id === card.id;
-          const isDeletePending = deleteWalletCardMutation.isPending && deleteWalletCardMutation.variables?.id === card.id;
-          const isBusy = isTogglePending || isDeletePending;
+      <AnimatedEntrance delay={50}>
+        <View style={styles.listSection}>
+          <Text style={styles.sectionTitle}>Kartların</Text>
+          {walletCards.map((card, index) => {
+            const isTogglePending = toggleWalletCardStatusMutation.isPending && toggleWalletCardStatusMutation.variables?.id === card.id;
+            const isDeletePending = deleteWalletCardMutation.isPending && deleteWalletCardMutation.variables?.id === card.id;
+            const isBusy = isTogglePending || isDeletePending;
 
-          return (
-            <SurfaceCard key={card.id}>
-              <View style={styles.topRow}>
-                <Text style={styles.bank}>{card.bankName}</Text>
-                <TagPill
-                  tag={{
-                    id: `${card.id}-${card.isActive ? 'active' : 'inactive'}`,
-                    label: card.isActive ? 'Aktif' : 'Pasif',
-                    tone: card.isActive ? 'success' : 'neutral',
-                  }}
-                />
-              </View>
-              <Text style={styles.cardTitle}>{card.customName}</Text>
-              <Text style={styles.cardMeta}>{card.cardType}</Text>
+            return (
+              <AnimatedEntrance key={card.id} delay={80 + index * 40}>
+                <SurfaceCard>
+                  <View style={styles.topRow}>
+                    <Text style={styles.bank}>{card.bankName}</Text>
+                    <TagPill
+                      tag={{
+                        id: `${card.id}-${card.isActive ? 'active' : 'inactive'}`,
+                        label: card.isActive ? 'Aktif' : 'Pasif',
+                        tone: card.isActive ? 'success' : 'neutral',
+                      }}
+                    />
+                  </View>
+                  <Text style={styles.cardTitle}>{card.customName}</Text>
+                  <Text style={styles.cardMeta}>{card.cardType}</Text>
 
-              <View style={styles.cardActions}>
-                <Pressable
-                  style={[styles.statusButton, card.isActive ? styles.statusButtonPassive : styles.statusButtonActive, isBusy && styles.buttonDisabled]}
-                  onPress={() => toggleWalletCardStatusMutation.mutate({ id: card.id })}
-                  disabled={isBusy}
-                >
-                  <Text style={[styles.statusButtonText, card.isActive ? styles.statusButtonTextPassive : styles.statusButtonTextActive]}>
-                    {isTogglePending ? (card.isActive ? 'Pasif Yapılıyor...' : 'Aktif Yapılıyor...') : card.isActive ? 'Pasif Yap' : 'Aktif Yap'}
-                  </Text>
-                </Pressable>
+                  <View style={styles.cardActions}>
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.statusButton,
+                        card.isActive ? styles.statusButtonPassive : styles.statusButtonActive,
+                        isBusy && styles.buttonDisabled,
+                        pressed && !isBusy && styles.pressablePressed,
+                      ]}
+                      onPress={() => toggleWalletCardStatusMutation.mutate({ id: card.id })}
+                      disabled={isBusy}
+                    >
+                      <Text style={[styles.statusButtonText, card.isActive ? styles.statusButtonTextPassive : styles.statusButtonTextActive]}>
+                        {isTogglePending ? (card.isActive ? 'Pasif Yapılıyor...' : 'Aktif Yapılıyor...') : card.isActive ? 'Pasif Yap' : 'Aktif Yap'}
+                      </Text>
+                    </Pressable>
 
-                {!card.isActive ? (
-                  <Pressable style={[styles.deleteButton, isBusy && styles.buttonDisabled]} onPress={() => handleDeleteCard(card.id, card.customName)} disabled={isBusy}>
-                    <Text style={styles.deleteButtonText}>{isDeletePending ? 'Siliniyor...' : 'Sil'}</Text>
-                  </Pressable>
-                ) : null}
-              </View>
-            </SurfaceCard>
-          );
-        })}
-      </View>
+                    {!card.isActive ? (
+                      <Pressable
+                        style={({ pressed }) => [styles.deleteButton, isBusy && styles.buttonDisabled, pressed && !isBusy && styles.pressablePressed]}
+                        onPress={() => handleDeleteCard(card.id, card.customName)}
+                        disabled={isBusy}
+                      >
+                        <Text style={styles.deleteButtonText}>{isDeletePending ? 'Siliniyor...' : 'Sil'}</Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                </SurfaceCard>
+              </AnimatedEntrance>
+            );
+          })}
+        </View>
+      </AnimatedEntrance>
 
       {toggleWalletCardStatusMutation.isError ? <StateCard title="Kart durumu güncellenemedi" description="Kart durumu şu an değiştirilemedi." tone="danger" /> : null}
       {deleteWalletCardMutation.isError ? <StateCard title="Kart silinemedi" description="Kart şu an silinemedi. Aktif kartları önce pasif yapman gerekir." tone="danger" /> : null}
 
-      <View style={styles.actions}>
-        <Pressable style={styles.primaryAction} onPress={() => router.push('/wallet/add-card')}>
-          <Text style={styles.primaryActionText}>Kart Ekle</Text>
-        </Pressable>
-      </View>
+      <AnimatedEntrance delay={180}>
+        <View style={styles.actions}>
+          <Pressable style={({ pressed }) => [styles.primaryAction, pressed && styles.pressablePressed]} onPress={() => router.push('/wallet/add-card')}>
+            <Text style={styles.primaryActionText}>Kart Ekle</Text>
+          </Pressable>
+        </View>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }
@@ -180,5 +198,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '800',
     fontSize: 16,
+  },
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
 });

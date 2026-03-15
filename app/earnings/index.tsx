@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { StateCard } from '@/components/common/StateCard';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
 import { colors } from '@/theme/colors';
@@ -70,127 +71,139 @@ export default function EarningsScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Kazanç Paneli" subtitle="Kazancını, bekleyen ödüllerini ve fırsat potansiyelini tek ekranda gör." />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Kazanç Paneli" subtitle="Kazancını, bekleyen ödüllerini ve fırsat potansiyelini tek ekranda gör." />
+      </AnimatedEntrance>
 
-      <View style={styles.hero}>
-        <Text style={styles.heroEyebrow}>{data.summary.monthLabel}</Text>
-        <Text style={styles.heroTitle}>Bu ay kazandığın</Text>
-        <Text style={styles.heroValue}>{data.summary.totalEarnedText}</Text>
+      <AnimatedEntrance delay={40}>
+        <View style={styles.hero}>
+          <Text style={styles.heroEyebrow}>{data.summary.monthLabel}</Text>
+          <Text style={styles.heroTitle}>Bu ay kazandığın</Text>
+          <Text style={styles.heroValue}>{data.summary.totalEarnedText}</Text>
 
-        <View style={styles.chartCard}>
-          <View style={styles.chartTopRow}>
-            <Text style={styles.chartTitle}>Haftalık Kazanç Eğilimi</Text>
-            <Text style={styles.chartValue}>+18%</Text>
-          </View>
-          <View style={styles.chartBarsRow}>
-            {earningsTrend.map((point, index) => (
-              <View key={`${point}-${index}`} style={styles.chartColumn}>
-                <View style={styles.chartTrack}>
-                  <View style={[styles.chartBar, { height: `${point}%` }]} />
+          <View style={styles.chartCard}>
+            <View style={styles.chartTopRow}>
+              <Text style={styles.chartTitle}>Haftalık Kazanç Eğilimi</Text>
+              <Text style={styles.chartValue}>+18%</Text>
+            </View>
+            <View style={styles.chartBarsRow}>
+              {earningsTrend.map((point, index) => (
+                <View key={`${point}-${index}`} style={styles.chartColumn}>
+                  <View style={styles.chartTrack}>
+                    <View style={[styles.chartBar, { height: `${point}%` }]} />
+                  </View>
+                  <Text style={styles.chartLabel}>{earningTrendLabels[index]}</Text>
                 </View>
-                <Text style={styles.chartLabel}>{earningTrendLabels[index]}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.heroMetaWrap}>
-          <View style={styles.heroMetaCard}>
-            <Text style={styles.heroMetaLabel}>Bekleyen ödül</Text>
-            <Text style={styles.heroMetaValue}>{data.summary.pendingRewardText}</Text>
-          </View>
-          <View style={styles.heroMetaCard}>
-            <Text style={styles.heroMetaLabel}>Potansiyel ek kazanç</Text>
-            <Text style={styles.heroMetaValue}>{data.summary.potentialRewardText}</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Özet Göstergeler</Text>
-        <View style={styles.statsGrid}>
-          {data.stats.map((item) => {
-            const toneColors = resolveStatToneColors(item.tone);
-
-            return (
-              <View
-                key={item.id}
-                style={[
-                  styles.statTile,
-                  {
-                    backgroundColor: toneColors.surface,
-                    borderColor: toneColors.border,
-                  },
-                ]}
-              >
-                <View style={[styles.statAccent, { backgroundColor: toneColors.accent }]} />
-                <Text style={[styles.statValue, { color: toneColors.value }]}>{item.valueText}</Text>
-                <Text style={styles.statLabel}>{item.label}</Text>
-              </View>
-            );
-          })}
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Bekleyen ve Kazanılanlar</Text>
-          <Text style={styles.sectionHint}>Son hareketler</Text>
-        </View>
-        {data.history.map((item) => (
-          <View key={item.id} style={styles.historyCard}>
-            <View style={styles.historyTopRow}>
-              <Text style={styles.historyBank}>{item.bankName}</Text>
-              <TagPill
-                tag={{
-                  id: `${item.id}-${item.status}`,
-                  label: item.status === 'completed' ? 'Tamamlandı' : 'Bekliyor',
-                  tone: item.status === 'completed' ? 'success' : 'warning',
-                }}
-              />
-            </View>
-            <Text style={styles.historyTitle}>{item.title}</Text>
-            <View style={styles.historyBottomRow}>
-              <Text style={styles.historyReward}>{item.rewardText}</Text>
-              <Text style={styles.historyDate}>{item.dateLabel}</Text>
+              ))}
             </View>
           </View>
-        ))}
-      </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Potansiyel Kazanç</Text>
-          <Text style={styles.sectionHint}>En yüksek fırsatlar</Text>
+          <View style={styles.heroMetaWrap}>
+            <View style={styles.heroMetaCard}>
+              <Text style={styles.heroMetaLabel}>Bekleyen ödül</Text>
+              <Text style={styles.heroMetaValue}>{data.summary.pendingRewardText}</Text>
+            </View>
+            <View style={styles.heroMetaCard}>
+              <Text style={styles.heroMetaLabel}>Potansiyel ek kazanç</Text>
+              <Text style={styles.heroMetaValue}>{data.summary.potentialRewardText}</Text>
+            </View>
+          </View>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
-          {data.potential.map((item) => (
-            <View key={item.id} style={styles.horizontalCard}>
-              <View style={styles.potentialCard}>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={90}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Özet Göstergeler</Text>
+          <View style={styles.statsGrid}>
+            {data.stats.map((item) => {
+              const toneColors = resolveStatToneColors(item.tone);
+
+              return (
+                <View
+                  key={item.id}
+                  style={[
+                    styles.statTile,
+                    {
+                      backgroundColor: toneColors.surface,
+                      borderColor: toneColors.border,
+                    },
+                  ]}
+                >
+                  <View style={[styles.statAccent, { backgroundColor: toneColors.accent }]} />
+                  <Text style={[styles.statValue, { color: toneColors.value }]}>{item.valueText}</Text>
+                  <Text style={styles.statLabel}>{item.label}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={140}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Bekleyen ve Kazanılanlar</Text>
+            <Text style={styles.sectionHint}>Son hareketler</Text>
+          </View>
+          {data.history.map((item) => (
+            <View key={item.id} style={styles.historyCard}>
+              <View style={styles.historyTopRow}>
                 <Text style={styles.historyBank}>{item.bankName}</Text>
-                <Text style={styles.potentialTitle}>{item.title}</Text>
-                <Text style={styles.potentialValue}>{item.potentialText}</Text>
-                <View style={styles.potentialActionBox}>
-                  <Text style={styles.potentialActionLabel}>Kalan adım</Text>
-                  <Text style={styles.potentialDescription}>{item.remainingActionText}</Text>
-                </View>
+                <TagPill
+                  tag={{
+                    id: `${item.id}-${item.status}`,
+                    label: item.status === 'completed' ? 'Tamamlandı' : 'Bekliyor',
+                    tone: item.status === 'completed' ? 'success' : 'warning',
+                  }}
+                />
+              </View>
+              <Text style={styles.historyTitle}>{item.title}</Text>
+              <View style={styles.historyBottomRow}>
+                <Text style={styles.historyReward}>{item.rewardText}</Text>
+                <Text style={styles.historyDate}>{item.dateLabel}</Text>
               </View>
             </View>
           ))}
-        </ScrollView>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Dikkat Gerektirenler</Text>
-          <Text style={styles.sectionHint}>Hızlı aksiyon önerileri</Text>
         </View>
-        {data.alerts.map((item) => (
-          <View key={item.id} style={styles.alertCardWrap}>
-            <StateCard title={item.title} description={item.description} tone={item.tone === 'info' ? 'default' : item.tone} />
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={190}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Potansiyel Kazanç</Text>
+            <Text style={styles.sectionHint}>En yüksek fırsatlar</Text>
           </View>
-        ))}
-      </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
+            {data.potential.map((item) => (
+              <View key={item.id} style={styles.horizontalCard}>
+                <View style={styles.potentialCard}>
+                  <Text style={styles.historyBank}>{item.bankName}</Text>
+                  <Text style={styles.potentialTitle}>{item.title}</Text>
+                  <Text style={styles.potentialValue}>{item.potentialText}</Text>
+                  <View style={styles.potentialActionBox}>
+                    <Text style={styles.potentialActionLabel}>Kalan adım</Text>
+                    <Text style={styles.potentialDescription}>{item.remainingActionText}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={240}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Dikkat Gerektirenler</Text>
+            <Text style={styles.sectionHint}>Hızlı aksiyon önerileri</Text>
+          </View>
+          {data.alerts.map((item) => (
+            <View key={item.id} style={styles.alertCardWrap}>
+              <StateCard title={item.title} description={item.description} tone={item.tone === 'info' ? 'default' : item.tone} />
+            </View>
+          ))}
+        </View>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }

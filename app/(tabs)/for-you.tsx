@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { CampaignPreviewCard } from '@/components/common/CampaignPreviewCard';
 import { StateCard } from '@/components/common/StateCard';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -12,7 +13,6 @@ import { usePersonalizedCampaigns, useFeaturedCampaignSummary } from '@/hooks/us
 
 export default function ForYouScreen() {
   const { data: campaigns = [], isLoading: campaignsLoading, isError: campaignsError } = usePersonalizedCampaigns();
-
   const { data: featuredCampaignSummary, isLoading: summaryLoading, isError: summaryError } = useFeaturedCampaignSummary();
 
   const nearCompletion = campaigns.filter((campaign) => campaign.isProgressive);
@@ -20,89 +20,91 @@ export default function ForYouScreen() {
 
   return (
     <AppScreen>
-      <AppHeader
-        title="Senin İçin"
-        subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada."
-        showBackButton={false}
-      />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Senin İçin" subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada." showBackButton={false} />
+      </AnimatedEntrance>
 
-      <Pressable style={styles.aiSearchBox} onPress={() => router.push('/assistant')}>
-        <Text style={styles.aiSearchTitle}>AI destekli arama</Text>
-        <Text style={styles.aiSearchText}>Örn: Akaryakıtta en çok hangi kartımla kazanırım?</Text>
-      </Pressable>
+      <AnimatedEntrance delay={40}>
+        <Pressable style={({ pressed }) => [styles.aiSearchBox, pressed && styles.pressablePressed]} onPress={() => router.push('/assistant')}>
+          <Text style={styles.aiSearchTitle}>AI destekli arama</Text>
+          <Text style={styles.aiSearchText}>Örn: Akaryakıtta en çok hangi kartımla kazanırım?</Text>
+        </Pressable>
+      </AnimatedEntrance>
 
-      {campaignsLoading || summaryLoading ? (
-        <StateCard title="Yükleniyor" description="Sana uygun fırsatları hazırlıyoruz..." />
-      ) : null}
-
-      {campaignsError || summaryError ? (
-        <StateCard title="Veriler alınamadı" description="Kampanyalar şu an yüklenemedi. Lütfen tekrar dene." tone="danger" />
-      ) : null}
-
+      {campaignsLoading || summaryLoading ? <StateCard title="Yükleniyor" description="Sana uygun fırsatları hazırlıyoruz..." /> : null}
+      {campaignsError || summaryError ? <StateCard title="Veriler alınamadı" description="Kampanyalar şu an yüklenemedi. Lütfen tekrar dene." tone="danger" /> : null}
       {!campaignsLoading && !campaignsError && campaigns.length === 0 ? (
         <StateCard title="Henüz fırsat bulunamadı" description="Kartlarını ve tercihlerini güncellediğinde sana daha fazla kampanya gösterebiliriz." tone="warning" />
       ) : null}
 
       {featuredCampaignSummary ? (
-        <View style={styles.heroCard}>
-          <View style={styles.heroTopRow}>
-            <Text style={styles.heroTitle}>{featuredCampaignSummary.title}</Text>
-            <Text style={styles.heroValue}>{featuredCampaignSummary.monthlyPotentialText}</Text>
+        <AnimatedEntrance delay={90}>
+          <View style={styles.heroCard}>
+            <View style={styles.heroTopRow}>
+              <Text style={styles.heroTitle}>{featuredCampaignSummary.title}</Text>
+              <Text style={styles.heroValue}>{featuredCampaignSummary.monthlyPotentialText}</Text>
+            </View>
+            <Text style={styles.heroText}>{featuredCampaignSummary.description}</Text>
+            <Pressable style={({ pressed }) => [styles.heroAction, pressed && styles.pressablePressed]} onPress={() => router.push('/earnings')}>
+              <Text style={styles.heroActionText}>Kazanç Panelini Gör</Text>
+            </Pressable>
           </View>
-          <Text style={styles.heroText}>{featuredCampaignSummary.description}</Text>
-          <Pressable style={styles.heroAction} onPress={() => router.push('/earnings')}>
-            <Text style={styles.heroActionText}>Kazanç Panelini Gör</Text>
-          </Pressable>
-        </View>
+        </AnimatedEntrance>
       ) : null}
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Tamamlamaya Yakın</Text>
-          <Text style={styles.sectionLink}>Takipe Git</Text>
-        </View>
-        <FlatList
-          data={nearCompletion}
-          horizontal
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.horizontalList}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.carouselCard}>
-              <CampaignPreviewCard campaign={item} onPress={() => router.push(`/tracking/${item.id}`)} />
-            </View>
-          )}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Son Günler</Text>
-          <Text style={styles.sectionLink}>Keşfet</Text>
-        </View>
-        {expiringSoon.map((campaign) => (
-          <SurfaceCard key={campaign.id}>
-            <View style={styles.rowTop}>
-              <Text style={styles.bank}>{campaign.bankName}</Text>
-              {campaign.tags?.[0] ? <TagPill tag={campaign.tags[0]} /> : null}
-            </View>
-            <Text style={styles.cardTitle}>{campaign.title}</Text>
-            <Text style={styles.cardDescription}>{campaign.shortDescription}</Text>
-            <Text style={styles.deadline}>{campaign.deadlineText}</Text>
-          </SurfaceCard>
-        ))}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kartlarına Uygun Kampanyalar</Text>
-        {campaigns.map((campaign) => (
-          <CampaignPreviewCard
-            key={campaign.id}
-            campaign={campaign}
-            onPress={() => router.push(campaign.isProgressive ? `/tracking/${campaign.id}` : `/campaigns/${campaign.id}`)}
+      <AnimatedEntrance delay={130}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Tamamlamaya Yakın</Text>
+            <Text style={styles.sectionLink}>Takipe Git</Text>
+          </View>
+          <FlatList
+            data={nearCompletion}
+            horizontal
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.horizontalList}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.carouselCard}>
+                <CampaignPreviewCard campaign={item} onPress={() => router.push(`/tracking/${item.id}`)} />
+              </View>
+            )}
           />
-        ))}
-      </View>
+        </View>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={180}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Son Günler</Text>
+            <Text style={styles.sectionLink}>Keşfet</Text>
+          </View>
+          {expiringSoon.map((campaign) => (
+            <SurfaceCard key={campaign.id}>
+              <View style={styles.rowTop}>
+                <Text style={styles.bank}>{campaign.bankName}</Text>
+                {campaign.tags?.[0] ? <TagPill tag={campaign.tags[0]} /> : null}
+              </View>
+              <Text style={styles.cardTitle}>{campaign.title}</Text>
+              <Text style={styles.cardDescription}>{campaign.shortDescription}</Text>
+              <Text style={styles.deadline}>{campaign.deadlineText}</Text>
+            </SurfaceCard>
+          ))}
+        </View>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={230}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Kartlarına Uygun Kampanyalar</Text>
+          {campaigns.map((campaign) => (
+            <CampaignPreviewCard
+              key={campaign.id}
+              campaign={campaign}
+              onPress={() => router.push(campaign.isProgressive ? `/tracking/${campaign.id}` : `/campaigns/${campaign.id}`)}
+            />
+          ))}
+        </View>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }
@@ -115,6 +117,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.lg,
     gap: 6,
+  },
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
   aiSearchTitle: {
     color: colors.primary,

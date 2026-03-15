@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -14,35 +15,41 @@ export default function NotificationsScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Bildirimler" subtitle="Fırsat, takip ve işlem güncellemeleri burada listelenir." showBackButton={false} />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Bildirimler" subtitle="Fırsat, takip ve işlem güncellemeleri burada listelenir." showBackButton={false} />
+      </AnimatedEntrance>
 
       {isLoading ? <StateCard title="Yükleniyor" description="Bildirimlerin hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Bildirimler alınamadı" description="Şu an bildirimler yüklenemedi." tone="danger" /> : null}
       {!isLoading && !isError && notifications.length === 0 ? (
-        <View style={styles.emptyWrap}>
-          <StateCard title="Bildirimin yok" description="Yeni fırsat veya takip güncellemesi olduğunda burada göreceksin." tone="warning" />
-          <Pressable style={styles.emptyAction} onPress={() => router.push('/(tabs)/for-you')}>
-            <Text style={styles.emptyActionText}>Senin İçin'e Git</Text>
-          </Pressable>
-        </View>
+        <AnimatedEntrance delay={50}>
+          <View style={styles.emptyWrap}>
+            <StateCard title="Bildirimin yok" description="Yeni fırsat veya takip güncellemesi olduğunda burada göreceksin." tone="warning" />
+            <Pressable style={({ pressed }) => [styles.emptyAction, pressed && styles.pressablePressed]} onPress={() => router.push('/(tabs)/for-you')}>
+              <Text style={styles.emptyActionText}>Senin İçin'e Git</Text>
+            </Pressable>
+          </View>
+        </AnimatedEntrance>
       ) : null}
 
       <View style={styles.list}>
         {notifications.map((item, index) => (
-          <SurfaceCard key={item.id}>
-            <View style={styles.topRow}>
-              <Text style={styles.time}>{item.timeLabel}</Text>
-              <TagPill tag={{ id: item.id, label: item.type.toUpperCase(), tone: item.tone }} />
-            </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.body}>{item.body}</Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.orderLabel}>Bildirim #{notifications.length - index}</Text>
-              <Pressable style={styles.action} onPress={() => router.push(item.route as never)}>
-                <Text style={styles.actionText}>{item.ctaLabel}</Text>
-              </Pressable>
-            </View>
-          </SurfaceCard>
+          <AnimatedEntrance key={item.id} delay={70 + index * 40}>
+            <SurfaceCard>
+              <View style={styles.topRow}>
+                <Text style={styles.time}>{item.timeLabel}</Text>
+                <TagPill tag={{ id: item.id, label: item.type.toUpperCase(), tone: item.tone }} />
+              </View>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.body}>{item.body}</Text>
+              <View style={styles.bottomRow}>
+                <Text style={styles.orderLabel}>Bildirim #{notifications.length - index}</Text>
+                <Pressable style={({ pressed }) => [styles.action, pressed && styles.pressablePressed]} onPress={() => router.push(item.route as never)}>
+                  <Text style={styles.actionText}>{item.ctaLabel}</Text>
+                </Pressable>
+              </View>
+            </SurfaceCard>
+          </AnimatedEntrance>
         ))}
       </View>
     </AppScreen>
@@ -114,5 +121,9 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '800',
     fontSize: 14,
+  },
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
 });

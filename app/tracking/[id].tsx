@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { ProgressSteps } from '@/components/common/ProgressSteps';
@@ -33,52 +34,62 @@ export default function TrackingDetailScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Kampanya Takibi" subtitle="Aşamalı kampanyalar için işlem takip detayları" />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Kampanya Takibi" subtitle="Aşamalı kampanyalar için işlem takip detayları" />
+      </AnimatedEntrance>
 
-      <SurfaceCard>
-        <View style={styles.topRow}>
-          <Text style={styles.bank}>{campaign.bankName}</Text>
-          <TagPill tag={statusTag} />
-        </View>
-        <Text style={styles.title}>{campaign.title}</Text>
-        <Text style={styles.description}>{campaign.shortDescription}</Text>
-        <View style={styles.progressSection}>
-          <ProgressSteps current={campaign.progressCurrent} total={campaign.progressTarget} title="İlerleme" />
-        </View>
-        <Text style={styles.nextAction}>{campaign.nextActionText}</Text>
-      </SurfaceCard>
+      <AnimatedEntrance delay={50}>
+        <SurfaceCard>
+          <View style={styles.topRow}>
+            <Text style={styles.bank}>{campaign.bankName}</Text>
+            <TagPill tag={statusTag} />
+          </View>
+          <Text style={styles.title}>{campaign.title}</Text>
+          <Text style={styles.description}>{campaign.shortDescription}</Text>
+          <View style={styles.progressSection}>
+            <ProgressSteps current={campaign.progressCurrent} total={campaign.progressTarget} title="İlerleme" />
+          </View>
+          <Text style={styles.nextAction}>{campaign.nextActionText}</Text>
+        </SurfaceCard>
+      </AnimatedEntrance>
 
-      <SurfaceCard>
-        <Text style={styles.sectionTitle}>Kampanya Koşulları</Text>
-        {campaign.requirements.map((requirement) => (
-          <Text key={requirement} style={styles.rule}>
-            • {requirement}
-          </Text>
-        ))}
-      </SurfaceCard>
-
-      <SurfaceCard>
-        <Text style={styles.sectionTitle}>Eklenen İşlemler</Text>
-        <View style={styles.timeline}>
-          {campaign.events.map((event) => (
-            <View key={event.id} style={styles.timelineItem}>
-              <View style={styles.timelineMeta}>
-                <Text style={styles.timelineDate}>{event.dateLabel}</Text>
-                <Text style={styles.timelineAmount}>{event.amountText}</Text>
-              </View>
-              <Text style={styles.timelineMerchant}>{event.merchantName}</Text>
-              <Text style={[styles.timelineStatus, event.qualified && styles.timelineStatusQualified]}>
-                {event.qualified ? 'Uygun işlem' : 'Uygun değil'}
-              </Text>
-            </View>
+      <AnimatedEntrance delay={100}>
+        <SurfaceCard>
+          <Text style={styles.sectionTitle}>Kampanya Koşulları</Text>
+          {campaign.requirements.map((requirement) => (
+            <Text key={requirement} style={styles.rule}>
+              • {requirement}
+            </Text>
           ))}
-        </View>
-      </SurfaceCard>
+        </SurfaceCard>
+      </AnimatedEntrance>
 
-      <View style={styles.actions}>
-        <PrimaryButton label="İşlem Ekle" onPress={() => router.push('/tracking/add-event')} />
-        <SecondaryButton label="Bankaya Git" />
-      </View>
+      <AnimatedEntrance delay={150}>
+        <SurfaceCard>
+          <Text style={styles.sectionTitle}>Eklenen İşlemler</Text>
+          <View style={styles.timeline}>
+            {campaign.events.map((event, index) => (
+              <AnimatedEntrance key={event.id} delay={180 + index * 35}>
+                <View style={styles.timelineItem}>
+                  <View style={styles.timelineMeta}>
+                    <Text style={styles.timelineDate}>{event.dateLabel}</Text>
+                    <Text style={styles.timelineAmount}>{event.amountText}</Text>
+                  </View>
+                  <Text style={styles.timelineMerchant}>{event.merchantName}</Text>
+                  <Text style={[styles.timelineStatus, event.qualified && styles.timelineStatusQualified]}>{event.qualified ? 'Uygun işlem' : 'Uygun değil'}</Text>
+                </View>
+              </AnimatedEntrance>
+            ))}
+          </View>
+        </SurfaceCard>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={210}>
+        <View style={styles.actions}>
+          <PrimaryButton label="İşlem Ekle" onPress={() => router.push('/tracking/add-event')} />
+          <SecondaryButton label="Bankaya Git" />
+        </View>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }

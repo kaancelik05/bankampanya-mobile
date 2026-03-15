@@ -22,10 +22,11 @@ export function SelectableChip({
   return (
     <Pressable
       onPress={onPress}
-      style={[
+      style={({ pressed }) => [
         styles.base,
         variant === 'tile' ? styles.tile : styles.pill,
         active && styles.active,
+        pressed && styles.pressed,
       ]}
     >
       <View style={styles.labelRow}>
@@ -58,6 +59,10 @@ const styles = StyleSheet.create({
   active: {
     borderColor: colors.primary,
     backgroundColor: colors.primarySoft,
+  },
+  pressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
   labelRow: {
     flexDirection: 'row',

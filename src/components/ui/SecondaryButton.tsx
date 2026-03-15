@@ -10,7 +10,7 @@ type SecondaryButtonProps = {
 
 export function SecondaryButton({ label, onPress }: SecondaryButtonProps) {
   return (
-    <Pressable style={styles.button} onPress={onPress}>
+    <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={onPress}>
       <Text style={styles.text}>{label}</Text>
     </Pressable>
   );
@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 56,
     justifyContent: 'center',
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.985 }],
+    opacity: 0.92,
   },
   text: {
     color: colors.navy,

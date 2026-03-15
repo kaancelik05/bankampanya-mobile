@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppScreen } from '@/components/common/AppScreen';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
@@ -11,38 +12,42 @@ import { spacing } from '@/theme/spacing';
 export default function OnboardingStartScreen() {
   return (
     <AppScreen>
-      <LinearGradient colors={[colors.navy, '#244677']} style={styles.hero}>
-        <Text style={styles.brand}>Bankampanya</Text>
-        <Text style={styles.heroTitle}>Kartlarınla daha çok kazan</Text>
-        <Text style={styles.heroSubtitle}>
-          Tüm kampanyaları, kredi fırsatlarını ve takip etmen gereken adımları tek yerde gör.
-        </Text>
+      <AnimatedEntrance delay={0}>
+        <LinearGradient colors={[colors.navy, '#244677']} style={styles.hero}>
+          <Text style={styles.brand}>Bankampanya</Text>
+          <Text style={styles.heroTitle}>Kartlarınla daha çok kazan</Text>
+          <Text style={styles.heroSubtitle}>Tüm kampanyaları, kredi fırsatlarını ve takip etmen gereken adımları tek yerde gör.</Text>
 
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>18</Text>
-            <Text style={styles.statLabel}>Uygun Fırsat</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>18</Text>
+              <Text style={styles.statLabel}>Uygun Fırsat</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>1.450 TL</Text>
+              <Text style={styles.statLabel}>Potansiyel Kazanç</Text>
+            </View>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>1.450 TL</Text>
-            <Text style={styles.statLabel}>Potansiyel Kazanç</Text>
-          </View>
+        </LinearGradient>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={70}>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>Akıllı başlangıç</Text>
+          <Text style={styles.infoText}>Önce bankalarını, kart türlerini ve ilgi alanlarını seç. Sonra sana uygun fırsatları gösterelim.</Text>
         </View>
-      </LinearGradient>
+      </AnimatedEntrance>
 
-      <View style={styles.infoCard}>
-        <Text style={styles.infoTitle}>Akıllı başlangıç</Text>
-        <Text style={styles.infoText}>
-          Önce bankalarını, kart türlerini ve ilgi alanlarını seç. Sonra sana uygun fırsatları gösterelim.
-        </Text>
-      </View>
+      <AnimatedEntrance delay={120}>
+        <View style={styles.actions}>
+          <PrimaryButton label="Devam Et" onPress={() => router.push('/(auth)/onboarding-cards')} />
+          <SecondaryButton label="Giriş Yap" onPress={() => router.push('/(auth)/login')} />
+        </View>
+      </AnimatedEntrance>
 
-      <View style={styles.actions}>
-        <PrimaryButton label="Devam Et" onPress={() => router.push('/(auth)/onboarding-cards')} />
-        <SecondaryButton label="Giriş Yap" onPress={() => router.push('/(auth)/login')} />
-      </View>
-
-      <Text style={styles.caption}>Aşamalı kampanyaları takip et, işlemlerini ekle, kazancını görünür hale getir.</Text>
+      <AnimatedEntrance delay={170}>
+        <Text style={styles.caption}>Aşamalı kampanyaları takip et, işlemlerini ekle, kazancını görünür hale getir.</Text>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }

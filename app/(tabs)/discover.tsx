@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
+import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { CampaignPreviewCard } from '@/components/common/CampaignPreviewCard';
 import { StateCard } from '@/components/common/StateCard';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -81,106 +82,118 @@ export default function DiscoverScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Keşfet" subtitle="Kategori, kart türü ve ödül tipine göre fırsatları filtrele." showBackButton={false} />
+      <AnimatedEntrance delay={0}>
+        <AppHeader title="Keşfet" subtitle="Kategori, kart türü ve ödül tipine göre fırsatları filtrele." showBackButton={false} />
+      </AnimatedEntrance>
 
-      <Pressable style={styles.searchBox} onPress={() => setIsSearchOpen(true)}>
-        <View style={styles.searchTopRow}>
-          <Text style={styles.searchLabel}>Kampanya ara</Text>
+      <AnimatedEntrance delay={40}>
+        <Pressable style={({ pressed }) => [styles.searchBox, pressed && styles.pressablePressed]} onPress={() => setIsSearchOpen(true)}>
+          <View style={styles.searchTopRow}>
+            <Text style={styles.searchLabel}>Kampanya ara</Text>
+            {isSearchOpen ? (
+              <Pressable onPress={handleClearSearch}>
+                <Text style={styles.clearText}>Temizle</Text>
+              </Pressable>
+            ) : null}
+          </View>
           {isSearchOpen ? (
-            <Pressable onPress={handleClearSearch}>
-              <Text style={styles.clearText}>Temizle</Text>
-            </Pressable>
-          ) : null}
-        </View>
-        {isSearchOpen ? (
-          <TextInput
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Örn: market, akaryakıt, mil kampanyası"
-            placeholderTextColor={colors.textMuted}
-            style={styles.searchInput}
-            autoFocus
-          />
-        ) : (
-          <Text style={styles.searchPlaceholder}>Örn: market, akaryakıt, mil kampanyası</Text>
-        )}
-      </Pressable>
+            <TextInput
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder="Örn: market, akaryakıt, mil kampanyası"
+              placeholderTextColor={colors.textMuted}
+              style={styles.searchInput}
+              autoFocus
+            />
+          ) : (
+            <Text style={styles.searchPlaceholder}>Örn: market, akaryakıt, mil kampanyası</Text>
+          )}
+        </Pressable>
+      </AnimatedEntrance>
 
       {isLoading ? <StateCard title="Yükleniyor" description="Keşfet ekranı için kampanyalar hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Keşfet verileri alınamadı" description="Kampanyalar şu an listelenemiyor." tone="danger" /> : null}
       {!isLoading && !isError && filteredCampaigns.length === 0 ? (
         <View style={styles.emptyStateWrap}>
           <StateCard title="Sonuç bulunamadı" description="Arama veya filtre kriterlerini değiştirerek tekrar deneyebilirsin." tone="warning" />
-          <Pressable style={styles.emptyStateAction} onPress={() => router.push('/(tabs)/for-you')}>
+          <Pressable style={({ pressed }) => [styles.emptyStateAction, pressed && styles.pressablePressed]} onPress={() => router.push('/(tabs)/for-you')}>
             <Text style={styles.emptyStateActionText}>Senin İçin'e Dön</Text>
           </Pressable>
         </View>
       ) : null}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kategoriler</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
-          {categories.map((category) => {
-            const active = selectedCategory === category;
-            return (
-              <Pressable key={category} style={[styles.filterChip, active && styles.filterChipActive]} onPress={() => setSelectedCategory(category)}>
-                <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>{category}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      <AnimatedEntrance delay={90}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Kategoriler</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
+            {categories.map((category) => {
+              const active = selectedCategory === category;
+              return (
+                <Pressable key={category} style={({ pressed }) => [styles.filterChip, active && styles.filterChipActive, pressed && styles.pressablePressed]} onPress={() => setSelectedCategory(category)}>
+                  <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>{category}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </AnimatedEntrance>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Filtreler</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
-          {filters.map((filter) => {
-            const active = selectedFilter === filter;
-            return (
-              <Pressable key={filter} style={[styles.filterChipMuted, active && styles.filterChipActive]} onPress={() => setSelectedFilter(filter)}>
-                <Text style={[styles.filterChipMutedText, active && styles.filterChipTextActive]}>{filter}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      <AnimatedEntrance delay={130}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Filtreler</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
+            {filters.map((filter) => {
+              const active = selectedFilter === filter;
+              return (
+                <Pressable key={filter} style={({ pressed }) => [styles.filterChipMuted, active && styles.filterChipActive, pressed && styles.pressablePressed]} onPress={() => setSelectedFilter(filter)}>
+                  <Text style={[styles.filterChipMutedText, active && styles.filterChipTextActive]}>{filter}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </AnimatedEntrance>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Öne Çıkan Fırsatlar</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredRow}>
-          {(featuredCampaigns.length > 0 ? featuredCampaigns : featuredIdeas).map((item) => {
-            const featured = 'bankName' in item
-              ? {
-                  id: item.id,
-                  eyebrow: item.bankName,
-                  title: item.title,
-                  description: item.shortDescription,
-                  tag: { id: `${item.id}-featured`, label: item.rewardText, tone: 'success' as const },
-                }
-              : item;
+      <AnimatedEntrance delay={180}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Öne Çıkan Fırsatlar</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredRow}>
+            {(featuredCampaigns.length > 0 ? featuredCampaigns : featuredIdeas).map((item) => {
+              const featured = 'bankName' in item
+                ? {
+                    id: item.id,
+                    eyebrow: item.bankName,
+                    title: item.title,
+                    description: item.shortDescription,
+                    tag: { id: `${item.id}-featured`, label: item.rewardText, tone: 'success' as const },
+                  }
+                : item;
 
-            return (
-              <SurfaceCard key={featured.id}>
-                <View style={styles.featuredCard}>
-                  <View style={styles.featuredTopRow}>
-                    <Text style={styles.featuredEyebrow}>{featured.eyebrow}</Text>
-                    <TagPill tag={featured.tag} />
+              return (
+                <SurfaceCard key={featured.id}>
+                  <View style={styles.featuredCard}>
+                    <View style={styles.featuredTopRow}>
+                      <Text style={styles.featuredEyebrow}>{featured.eyebrow}</Text>
+                      <TagPill tag={featured.tag} />
+                    </View>
+                    <Text style={styles.featuredTitle}>{featured.title}</Text>
+                    <Text style={styles.featuredDescription}>{featured.description}</Text>
                   </View>
-                  <Text style={styles.featuredTitle}>{featured.title}</Text>
-                  <Text style={styles.featuredDescription}>{featured.description}</Text>
-                </View>
-              </SurfaceCard>
-            );
-          })}
-        </ScrollView>
-      </View>
+                </SurfaceCard>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </AnimatedEntrance>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kampanyalar</Text>
-        {filteredCampaigns.map((campaign) => (
-          <CampaignPreviewCard key={campaign.id} campaign={campaign} onPress={() => router.push(campaign.isProgressive ? `/tracking/${campaign.id}` : `/campaigns/${campaign.id}`)} />
-        ))}
-      </View>
+      <AnimatedEntrance delay={230}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Kampanyalar</Text>
+          {filteredCampaigns.map((campaign) => (
+            <CampaignPreviewCard key={campaign.id} campaign={campaign} onPress={() => router.push(campaign.isProgressive ? `/tracking/${campaign.id}` : `/campaigns/${campaign.id}`)} />
+          ))}
+        </View>
+      </AnimatedEntrance>
     </AppScreen>
   );
 }
@@ -193,6 +206,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.xl,
     gap: spacing.sm,
+  },
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
   },
   searchTopRow: {
     flexDirection: 'row',
