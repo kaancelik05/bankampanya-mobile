@@ -56,6 +56,9 @@ export default function ForYouScreen() {
             <Text style={styles.heroValue}>{featuredCampaignSummary.monthlyPotentialText}</Text>
           </View>
           <Text style={styles.heroText}>{featuredCampaignSummary.description}</Text>
+          <Pressable style={styles.heroAction} onPress={() => router.push('/earnings')}>
+            <Text style={styles.heroActionText}>Kazanç Panelini Gör</Text>
+          </Pressable>
         </View>
       ) : null}
 
@@ -153,6 +156,21 @@ const styles = StyleSheet.create({
     color: '#D6E3F5',
     fontSize: 14,
     lineHeight: 20,
+  },
+  heroAction: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.sm,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  heroActionText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '800',
   },
   section: {
     gap: spacing.md,

@@ -12,6 +12,12 @@ export const userProfile: UserProfile = {
 
 export const profileMenuItems: ProfileMenuItem[] = [
   {
+    id: 'profile-earnings',
+    title: 'Kazanç Paneli',
+    description: 'Toplam kazanımını, bekleyen ödüllerini ve fırsat potansiyelini görüntüle.',
+    route: '/earnings',
+  },
+  {
     id: 'profile-wallet',
     title: 'Kartlarını Yönet',
     description: 'Kayıtlı bankalarını ve kart türlerini güncelle.',
