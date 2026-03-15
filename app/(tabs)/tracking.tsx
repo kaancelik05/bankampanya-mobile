@@ -10,7 +10,6 @@ import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useTrackedCampaigns } from '@/hooks/useTracking';
-import { useNotificationsList } from '@/hooks/useNotifications';
 
 const tabs: Array<{ key: TrackingStatus | 'all'; label: string }> = [
   { key: 'active', label: 'Aktif' },
@@ -22,7 +21,6 @@ export default function TrackingScreen() {
   const [selectedTab, setSelectedTab] = useState<TrackingStatus>('active');
 
   const { data: trackedCampaigns = [], isLoading, isError } = useTrackedCampaigns();
-  const { data: notifications = [] } = useNotificationsList();
 
   const filteredCampaigns = useMemo(() => {
     return trackedCampaigns.filter((campaign) => campaign.status === selectedTab);
@@ -34,10 +32,6 @@ export default function TrackingScreen() {
         title="Takip"
         subtitle="Katıldığın kampanyaları, ilerlemelerini ve son tarihleri buradan yönet."
         showBackButton={false}
-        rightActions={[
-          { icon: 'notifications-outline', label: 'Bildirimler', onPress: () => router.push('/notifications'), badgeCount: notifications.length },
-          { icon: 'person-circle-outline', label: 'Profil', onPress: () => router.push('/profile') },
-        ]}
       />
 
       <View style={styles.tabsRow}>

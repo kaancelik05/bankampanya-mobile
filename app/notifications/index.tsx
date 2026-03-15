@@ -19,11 +19,16 @@ export default function NotificationsScreen() {
       {isLoading ? <StateCard title="Yükleniyor" description="Bildirimlerin hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Bildirimler alınamadı" description="Şu an bildirimler yüklenemedi." tone="danger" /> : null}
       {!isLoading && !isError && notifications.length === 0 ? (
-        <StateCard title="Bildirimin yok" description="Yeni fırsat veya takip güncellemesi olduğunda burada göreceksin." tone="warning" />
+        <View style={styles.emptyWrap}>
+          <StateCard title="Bildirimin yok" description="Yeni fırsat veya takip güncellemesi olduğunda burada göreceksin." tone="warning" />
+          <Pressable style={styles.emptyAction} onPress={() => router.push('/(tabs)/for-you')}>
+            <Text style={styles.emptyActionText}>Senin İçin'e Git</Text>
+          </Pressable>
+        </View>
       ) : null}
 
       <View style={styles.list}>
-        {notifications.map((item) => (
+        {notifications.map((item, index) => (
           <SurfaceCard key={item.id}>
             <View style={styles.topRow}>
               <Text style={styles.time}>{item.timeLabel}</Text>
@@ -31,9 +36,12 @@ export default function NotificationsScreen() {
             </View>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.body}>{item.body}</Text>
-            <Pressable style={styles.action} onPress={() => router.push(item.route as never)}>
-              <Text style={styles.actionText}>{item.ctaLabel}</Text>
-            </Pressable>
+            <View style={styles.bottomRow}>
+              <Text style={styles.orderLabel}>Bildirim #{notifications.length - index}</Text>
+              <Pressable style={styles.action} onPress={() => router.push(item.route as never)}>
+                <Text style={styles.actionText}>{item.ctaLabel}</Text>
+              </Pressable>
+            </View>
           </SurfaceCard>
         ))}
       </View>
@@ -42,6 +50,21 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
+  emptyWrap: {
+    gap: spacing.sm,
+  },
+  emptyAction: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  emptyActionText: {
+    color: colors.primary,
+    fontWeight: '800',
+    fontSize: 14,
+  },
   list: {
     gap: spacing.md,
   },
@@ -68,6 +91,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginBottom: spacing.md,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  orderLabel: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
   action: {
     alignSelf: 'flex-start',

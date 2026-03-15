@@ -74,12 +74,24 @@ export default function DiscoverScreen() {
     return filteredCampaigns.slice(0, 3);
   }, [filteredCampaigns]);
 
+  const handleClearSearch = () => {
+    setSearchText('');
+    setIsSearchOpen(false);
+  };
+
   return (
     <AppScreen>
       <AppHeader title="Keşfet" subtitle="Kategori, kart türü ve ödül tipine göre fırsatları filtrele." showBackButton={false} />
 
       <Pressable style={styles.searchBox} onPress={() => setIsSearchOpen(true)}>
-        <Text style={styles.searchLabel}>Kampanya ara</Text>
+        <View style={styles.searchTopRow}>
+          <Text style={styles.searchLabel}>Kampanya ara</Text>
+          {isSearchOpen ? (
+            <Pressable onPress={handleClearSearch}>
+              <Text style={styles.clearText}>Temizle</Text>
+            </Pressable>
+          ) : null}
+        </View>
         {isSearchOpen ? (
           <TextInput
             value={searchText}
@@ -97,7 +109,12 @@ export default function DiscoverScreen() {
       {isLoading ? <StateCard title="Yükleniyor" description="Keşfet ekranı için kampanyalar hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Keşfet verileri alınamadı" description="Kampanyalar şu an listelenemiyor." tone="danger" /> : null}
       {!isLoading && !isError && filteredCampaigns.length === 0 ? (
-        <StateCard title="Sonuç bulunamadı" description="Arama veya filtre kriterlerini değiştirerek tekrar deneyebilirsin." tone="warning" />
+        <View style={styles.emptyStateWrap}>
+          <StateCard title="Sonuç bulunamadı" description="Arama veya filtre kriterlerini değiştirerek tekrar deneyebilirsin." tone="warning" />
+          <Pressable style={styles.emptyStateAction} onPress={() => router.push('/(tabs)/for-you')}>
+            <Text style={styles.emptyStateActionText}>Senin İçin'e Dön</Text>
+          </Pressable>
+        </View>
       ) : null}
 
       <View style={styles.section}>
@@ -132,13 +149,15 @@ export default function DiscoverScreen() {
         <Text style={styles.sectionTitle}>Öne Çıkan Fırsatlar</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredRow}>
           {(featuredCampaigns.length > 0 ? featuredCampaigns : featuredIdeas).map((item) => {
-            const featured = 'bankName' in item ? {
-              id: item.id,
-              eyebrow: item.bankName,
-              title: item.title,
-              description: item.shortDescription,
-              tag: { id: `${item.id}-featured`, label: item.rewardText, tone: 'success' as const },
-            } : item;
+            const featured = 'bankName' in item
+              ? {
+                  id: item.id,
+                  eyebrow: item.bankName,
+                  title: item.title,
+                  description: item.shortDescription,
+                  tag: { id: `${item.id}-featured`, label: item.rewardText, tone: 'success' as const },
+                }
+              : item;
 
             return (
               <SurfaceCard key={featured.id}>
@@ -175,10 +194,20 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     gap: spacing.sm,
   },
+  searchTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   searchLabel: {
     color: colors.primary,
     fontWeight: '800',
     fontSize: 13,
+  },
+  clearText: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '800',
   },
   searchPlaceholder: {
     color: colors.navy,
@@ -195,6 +224,21 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontSize: 15,
     fontWeight: '700',
+  },
+  emptyStateWrap: {
+    gap: spacing.sm,
+  },
+  emptyStateAction: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  emptyStateActionText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '800',
   },
   section: {
     gap: spacing.md,

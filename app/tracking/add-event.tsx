@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -66,10 +67,7 @@ export default function AddTrackingEventScreen() {
 
       <SurfaceCard>
         <Text style={styles.sectionEyebrow}>Kampanya Özeti</Text>
-        <AppHeader
-          title={campaign.title}
-          subtitle={`${campaign.bankName} • Mevcut ilerleme: ${campaign.progressCurrent}/${campaign.progressTarget}`}
-        />
+        <AppHeader title={campaign.title} subtitle={`${campaign.bankName} • Mevcut ilerleme: ${campaign.progressCurrent}/${campaign.progressTarget}`} />
       </SurfaceCard>
 
       <View style={styles.formSection}>
@@ -95,12 +93,7 @@ export default function AddTrackingEventScreen() {
           <Text style={styles.sectionTitle}>Kategori</Text>
           <View style={styles.wrap}>
             {categories.map((category) => (
-              <SelectableChip
-                key={category}
-                label={category}
-                active={watch('category') === category}
-                onPress={() => setValue('category', category, { shouldValidate: true })}
-              />
+              <SelectableChip key={category} label={category} active={watch('category') === category} onPress={() => setValue('category', category, { shouldValidate: true })} />
             ))}
           </View>
         </View>
@@ -110,12 +103,7 @@ export default function AddTrackingEventScreen() {
           <Text style={styles.sectionTitle}>Marka / İşyeri</Text>
           <View style={styles.wrap}>
             {brands.map((brand) => (
-              <SelectableChip
-                key={brand}
-                label={brand}
-                active={watch('merchant') === brand}
-                onPress={() => setValue('merchant', brand, { shouldValidate: true })}
-              />
+              <SelectableChip key={brand} label={brand} active={watch('merchant') === brand} onPress={() => setValue('merchant', brand, { shouldValidate: true })} />
             ))}
           </View>
         </View>
@@ -133,19 +121,13 @@ export default function AddTrackingEventScreen() {
         <Text style={styles.sectionEyebrow}>Validasyon</Text>
         <Text style={styles.sectionTitle}>Ön Kontrol</Text>
         <View style={[styles.validationBanner, isValidPreview ? styles.validationSuccess : styles.validationWarning]}>
-          <Text style={[styles.validationText, isValidPreview ? styles.validationTextSuccess : styles.validationTextWarning]}>
-            {validationMessage}
-          </Text>
+          <Text style={[styles.validationText, isValidPreview ? styles.validationTextSuccess : styles.validationTextWarning]}>{validationMessage}</Text>
         </View>
         <Text style={styles.helperText}>Bu kayıt sadece kampanya takibini kolaylaştırmak içindir. Gerçek ödül değerlendirmesi bankaya aittir.</Text>
       </SurfaceCard>
 
-      {createTrackingEventMutation.isError ? (
-        <StateCard title="İşlem kaydedilemedi" description="İşlem bilgileri şu an kaydedilemedi." tone="danger" />
-      ) : null}
-      {createTrackingEventMutation.isSuccess ? (
-        <StateCard title="İşlem kaydedildi" description="İşlem kampanya takibine başarıyla eklendi." />
-      ) : null}
+      {createTrackingEventMutation.isError ? <StateCard title="İşlem kaydedilemedi" description="İşlem bilgileri şu an kaydedilemedi." tone="danger" /> : null}
+      {createTrackingEventMutation.isSuccess ? <StateCard title="İşlem kaydedildi" description="İşlem kampanya takibine başarıyla eklendi." /> : null}
 
       <View style={styles.actions}>
         <PrimaryButton
@@ -156,8 +138,9 @@ export default function AddTrackingEventScreen() {
               ...values,
             })
           )}
+          disabled={createTrackingEventMutation.isPending}
         />
-        <Pressable style={styles.secondaryAction}>
+        <Pressable style={styles.secondaryAction} onPress={() => router.back()}>
           <Text style={styles.secondaryActionText}>Vazgeç</Text>
         </Pressable>
       </View>

@@ -7,12 +7,11 @@ import { StateCard } from '@/components/common/StateCard';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
-import { useProfileMenuItems, useUserProfile } from '@/hooks/useProfile';
+import { useProfileMenuGroups, useUserProfile } from '@/hooks/useProfile';
 
 export default function ProfileScreen() {
   const { data: userProfile, isLoading: userLoading, isError: userError } = useUserProfile();
-
-  const { data: profileMenuItems = [], isLoading: menuLoading, isError: menuError } = useProfileMenuItems();
+  const { data: profileMenuGroups = [], isLoading: menuLoading, isError: menuError } = useProfileMenuGroups();
 
   if (userLoading || menuLoading) {
     return (
@@ -69,20 +68,26 @@ export default function ProfileScreen() {
         </View>
       </SurfaceCard>
 
-      <View style={styles.listSection}>
-        <Text style={styles.sectionTitle}>Hesap ve Ayarlar</Text>
-        {profileMenuItems.map((item) => (
-          <Pressable key={item.id} onPress={() => (item.route ? router.push(item.route as never) : undefined)}>
-            <SurfaceCard>
-              <View style={styles.itemTopRow}>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                {item.route ? <TagPill tag={{ id: item.id, label: 'Aç', tone: 'info' }} /> : null}
-              </View>
-              <Text style={styles.itemDescription}>{item.description}</Text>
-            </SurfaceCard>
-          </Pressable>
-        ))}
-      </View>
+      {profileMenuGroups.map((group) => (
+        <View key={group.id} style={styles.listSection}>
+          <Text style={styles.sectionTitle}>{group.title}</Text>
+          {group.items.map((item) => {
+            const itemRoute = 'route' in item ? item.route : undefined;
+
+            return (
+              <Pressable key={item.id} onPress={() => (itemRoute ? router.push(itemRoute as never) : undefined)}>
+                <SurfaceCard>
+                  <View style={styles.itemTopRow}>
+                    <Text style={styles.itemTitle}>{item.title}</Text>
+                    {itemRoute ? <TagPill tag={{ id: item.id, label: 'Aç', tone: 'info' }} /> : null}
+                  </View>
+                  <Text style={styles.itemDescription}>{item.description}</Text>
+                </SurfaceCard>
+              </Pressable>
+            );
+          })}
+        </View>
+      ))}
 
       <Pressable style={styles.logoutButton}>
         <Text style={styles.logoutText}>Çıkış Yap</Text>
