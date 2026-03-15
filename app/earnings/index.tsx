@@ -44,6 +44,9 @@ function resolveStatToneColors(tone?: 'default' | 'success' | 'warning' | 'info'
   };
 }
 
+const earningsTrend = [48, 62, 55, 74, 69, 88, 96];
+const earningTrendLabels = ['Pzt', 'Sal', 'Çrş', 'Prş', 'Cum', 'Cmt', 'Paz'];
+
 export default function EarningsScreen() {
   const { data, isLoading, isError } = useEarningsDashboard();
 
@@ -73,7 +76,25 @@ export default function EarningsScreen() {
         <Text style={styles.heroEyebrow}>{data.summary.monthLabel}</Text>
         <Text style={styles.heroTitle}>Bu ay kazandığın</Text>
         <Text style={styles.heroValue}>{data.summary.totalEarnedText}</Text>
-        <View style={styles.heroMetaWrap}> 
+
+        <View style={styles.chartCard}>
+          <View style={styles.chartTopRow}>
+            <Text style={styles.chartTitle}>Haftalık Kazanç Eğilimi</Text>
+            <Text style={styles.chartValue}>+18%</Text>
+          </View>
+          <View style={styles.chartBarsRow}>
+            {earningsTrend.map((point, index) => (
+              <View key={`${point}-${index}`} style={styles.chartColumn}>
+                <View style={styles.chartTrack}>
+                  <View style={[styles.chartBar, { height: `${point}%` }]} />
+                </View>
+                <Text style={styles.chartLabel}>{earningTrendLabels[index]}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.heroMetaWrap}>
           <View style={styles.heroMetaCard}>
             <Text style={styles.heroMetaLabel}>Bekleyen ödül</Text>
             <Text style={styles.heroMetaValue}>{data.summary.pendingRewardText}</Text>
@@ -111,7 +132,7 @@ export default function EarningsScreen() {
         </View>
       </View>
 
-      <View style={styles.section}> 
+      <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Bekleyen ve Kazanılanlar</Text>
           <Text style={styles.sectionHint}>Son hareketler</Text>
@@ -196,6 +217,61 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '900',
     lineHeight: 42,
+  },
+  chartCard: {
+    marginTop: spacing.md,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  chartTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  chartTitle: {
+    color: '#D6E3F5',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  chartValue: {
+    color: '#8FF0A4',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  chartBarsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    height: 120,
+  },
+  chartColumn: {
+    flex: 1,
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  chartTrack: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: radius.pill,
+    padding: 4,
+  },
+  chartBar: {
+    width: '100%',
+    backgroundColor: '#8FF0A4',
+    borderRadius: radius.pill,
+    minHeight: 12,
+  },
+  chartLabel: {
+    color: '#D6E3F5',
+    fontSize: 11,
+    fontWeight: '700',
   },
   heroMetaWrap: {
     marginTop: spacing.md,
