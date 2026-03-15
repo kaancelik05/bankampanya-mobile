@@ -8,6 +8,7 @@ import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useCreditOffers } from '@/hooks/useCredit';
+import { useNotificationsList } from '@/hooks/useNotifications';
 
 const creditTypes = ['Kredi', 'Nakit Avans', 'Taksitli Nakit Avans'] as const;
 const loanSubtypes = ['İhtiyaç', 'Konut', 'Taşıt'];
@@ -18,6 +19,7 @@ export default function CreditScreen() {
   const [amount, setAmount] = useState('50000');
 
   const { data: creditOffers = [] } = useCreditOffers();
+  const { data: notifications = [] } = useNotificationsList();
 
   const filteredOffers = useMemo(() => {
     return creditOffers.filter((offer) => {
@@ -29,7 +31,15 @@ export default function CreditScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Kredi" subtitle="Kredi, nakit avans ve taksitli nakit avans fırsatlarını tutara göre karşılaştır." showBackButton={false} />
+      <AppHeader
+        title="Kredi"
+        subtitle="Kredi, nakit avans ve taksitli nakit avans fırsatlarını tutara göre karşılaştır."
+        showBackButton={false}
+        rightActions={[
+          { icon: 'notifications-outline', label: 'Bildirimler', onPress: () => router.push('/notifications'), badgeCount: notifications.length },
+          { icon: 'person-circle-outline', label: 'Profil', onPress: () => router.push('/profile') },
+        ]}
+      />
 
       <SurfaceCard>
         <Text style={styles.sectionTitle}>Tür Seçimi</Text>

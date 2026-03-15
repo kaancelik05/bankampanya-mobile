@@ -65,10 +65,10 @@ export default function AddTrackingEventScreen() {
       <AppHeader title="İşlem Ekle" subtitle="Kampanya ilerlemeni güncellemek için işlem bilgilerini gir." />
 
       <SurfaceCard>
+        <Text style={styles.sectionEyebrow}>Kampanya Özeti</Text>
         <AppHeader
           title={campaign.title}
           subtitle={`${campaign.bankName} • Mevcut ilerleme: ${campaign.progressCurrent}/${campaign.progressTarget}`}
-          eyebrow="Kampanya Özeti"
         />
       </SurfaceCard>
 
@@ -91,7 +91,8 @@ export default function AddTrackingEventScreen() {
         />
 
         <View style={styles.fieldGroup}>
-          <AppHeader title="Kategori" eyebrow="İşlem Bilgisi" />
+          <Text style={styles.sectionEyebrow}>İşlem Bilgisi</Text>
+          <Text style={styles.sectionTitle}>Kategori</Text>
           <View style={styles.wrap}>
             {categories.map((category) => (
               <SelectableChip
@@ -105,7 +106,8 @@ export default function AddTrackingEventScreen() {
         </View>
 
         <View style={styles.fieldGroup}>
-          <AppHeader title="Marka / İşyeri" eyebrow="İşlem Bilgisi" />
+          <Text style={styles.sectionEyebrow}>İşlem Bilgisi</Text>
+          <Text style={styles.sectionTitle}>Marka / İşyeri</Text>
           <View style={styles.wrap}>
             {brands.map((brand) => (
               <SelectableChip
@@ -128,7 +130,8 @@ export default function AddTrackingEventScreen() {
       </View>
 
       <SurfaceCard>
-        <AppHeader title="Ön Kontrol" eyebrow="Validasyon" />
+        <Text style={styles.sectionEyebrow}>Validasyon</Text>
+        <Text style={styles.sectionTitle}>Ön Kontrol</Text>
         <View style={[styles.validationBanner, isValidPreview ? styles.validationSuccess : styles.validationWarning]}>
           <Text style={[styles.validationText, isValidPreview ? styles.validationTextSuccess : styles.validationTextWarning]}>
             {validationMessage}
@@ -168,6 +171,16 @@ const styles = StyleSheet.create({
   },
   fieldGroup: {
     gap: spacing.md,
+  },
+  sectionEyebrow: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  sectionTitle: {
+    color: colors.navy,
+    fontSize: 18,
+    fontWeight: '900',
   },
   wrap: {
     flexDirection: 'row',

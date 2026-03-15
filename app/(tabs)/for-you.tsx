@@ -9,9 +9,11 @@ import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { usePersonalizedCampaigns, useFeaturedCampaignSummary } from '@/hooks/useCampaigns';
+import { useNotificationsList } from '@/hooks/useNotifications';
 
 export default function ForYouScreen() {
   const { data: campaigns = [], isLoading: campaignsLoading, isError: campaignsError } = usePersonalizedCampaigns();
+  const { data: notifications = [] } = useNotificationsList();
 
   const { data: featuredCampaignSummary, isLoading: summaryLoading, isError: summaryError } = useFeaturedCampaignSummary();
 
@@ -20,7 +22,15 @@ export default function ForYouScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Senin İçin" subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada." showBackButton={false} />
+      <AppHeader
+        title="Senin İçin"
+        subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada."
+        showBackButton={false}
+        rightActions={[
+          { icon: 'notifications-outline', label: 'Bildirimler', onPress: () => router.push('/notifications'), badgeCount: notifications.length },
+          { icon: 'person-circle-outline', label: 'Profil', onPress: () => router.push('/profile') },
+        ]}
+      />
 
       <Pressable style={styles.aiSearchBox} onPress={() => router.push('/assistant')}>
         <Text style={styles.aiSearchTitle}>AI destekli arama</Text>

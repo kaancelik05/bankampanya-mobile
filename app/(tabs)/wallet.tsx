@@ -1,24 +1,37 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { StateCard } from '@/components/common/StateCard';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useWalletCards } from '@/hooks/useWallet';
+import { useDeleteWalletCardMutation, useToggleWalletCardStatusMutation } from '@/hooks/useWalletMutations';
 
 export default function WalletScreen() {
-  const { data: walletCards = [] } = useWalletCards();
+  const { data: walletCards = [], isLoading, isError } = useWalletCards();
+  const toggleWalletCardStatusMutation = useToggleWalletCardStatusMutation();
+  const deleteWalletCardMutation = useDeleteWalletCardMutation();
+
+  const handleDeleteCard = (id: string, customName: string) => {
+    Alert.alert('Kartı Sil', `${customName} kartını silmek istediğine emin misin? Bu işlem geri alınamaz.`, [
+      { text: 'Vazgeç', style: 'cancel' },
+      {
+        text: 'Sil',
+        style: 'destructive',
+        onPress: () => deleteWalletCardMutation.mutate({ id }),
+      },
+    ]);
+  };
 
   return (
     <AppScreen>
       <AppHeader title="Cüzdanım" subtitle="Kartlarını yönet, sana uygun fırsatları daha doğru gösterelim." showBackButton={false} />
 
-      <SurfaceCard>
-        <Text style={styles.summaryTitle}>Kayıtlı Kart Sayısı: {walletCards.length}</Text>
-        <Text style={styles.summaryText}>Aktif kartların, kişiselleştirilmiş kampanya önerilerinin temelini oluşturur.</Text>
-      </SurfaceCard>
+      {isLoading ? <StateCard title="Yükleniyor" description="Kartların hazırlanıyor..." /> : null}
+      {isError ? <StateCard title="Kartlar alınamadı" description="Cüzdan bilgileri şu an yüklenemedi." tone="danger" /> : null}
 
       <View style={styles.listSection}>
         <Text style={styles.sectionTitle}>Kartların</Text>
@@ -36,16 +49,37 @@ export default function WalletScreen() {
             </View>
             <Text style={styles.cardTitle}>{card.customName}</Text>
             <Text style={styles.cardMeta}>{card.cardType}</Text>
+
+            <View style={styles.cardActions}>
+              <Pressable
+                style={[styles.statusButton, card.isActive ? styles.statusButtonPassive : styles.statusButtonActive]}
+                onPress={() => toggleWalletCardStatusMutation.mutate({ id: card.id })}
+              >
+                <Text style={[styles.statusButtonText, card.isActive ? styles.statusButtonTextPassive : styles.statusButtonTextActive]}>
+                  {card.isActive ? 'Pasif Yap' : 'Aktif Yap'}
+                </Text>
+              </Pressable>
+
+              {!card.isActive ? (
+                <Pressable style={styles.deleteButton} onPress={() => handleDeleteCard(card.id, card.customName)}>
+                  <Text style={styles.deleteButtonText}>Sil</Text>
+                </Pressable>
+              ) : null}
+            </View>
           </SurfaceCard>
         ))}
       </View>
 
+      {toggleWalletCardStatusMutation.isError ? (
+        <StateCard title="Kart durumu güncellenemedi" description="Kart durumu şu an değiştirilemedi." tone="danger" />
+      ) : null}
+      {deleteWalletCardMutation.isError ? (
+        <StateCard title="Kart silinemedi" description="Kart şu an silinemedi. Aktif kartları önce pasif yapman gerekir." tone="danger" />
+      ) : null}
+
       <View style={styles.actions}>
         <Pressable style={styles.primaryAction} onPress={() => router.push('/wallet/add-card')}>
           <Text style={styles.primaryActionText}>Kart Ekle</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push('/profile')}>
-          <Text style={styles.link}>Profil ve Ayarlar</Text>
         </Pressable>
       </View>
     </AppScreen>
@@ -53,17 +87,6 @@ export default function WalletScreen() {
 }
 
 const styles = StyleSheet.create({
-  summaryTitle: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '900',
-    marginBottom: spacing.sm,
-  },
-  summaryText: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
-  },
   listSection: {
     gap: spacing.md,
   },
@@ -93,6 +116,51 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
   },
+  cardActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+  },
+  statusButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+  },
+  statusButtonActive: {
+    backgroundColor: colors.primarySoft,
+    borderColor: '#FFD6B0',
+  },
+  statusButtonPassive: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+  },
+  statusButtonText: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  statusButtonTextActive: {
+    color: colors.primary,
+  },
+  statusButtonTextPassive: {
+    color: colors.navy,
+  },
+  deleteButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: '#F6C8C8',
+    backgroundColor: '#FDECEC',
+  },
+  deleteButtonText: {
+    color: colors.danger,
+    fontSize: 14,
+    fontWeight: '800',
+  },
   actions: {
     gap: spacing.md,
   },
@@ -106,10 +174,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '800',
     fontSize: 16,
-  },
-  link: {
-    color: colors.primary,
-    fontWeight: '700',
-    fontSize: 14,
   },
 });

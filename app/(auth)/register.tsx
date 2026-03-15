@@ -56,7 +56,7 @@ export default function RegisterScreen() {
       </View>
 
       <View style={styles.formCard}>
-        <AppHeader title="Hesabını oluştur" subtitle="Birkaç temel bilgi ile hızlıca başlayabilirsin." />
+        <AppHeader title="Hesabını oluştur" subtitle="Birkaç temel bilgi ile hızlıca başlayabilirsin." rightActions={[]} />
         <View style={styles.form}>
           <AppInput label="Ad Soyad" value={watch('fullName')} onChangeText={(value) => setValue('fullName', value, { shouldValidate: true })} helperText={errors.fullName?.message} />
           <AppInput label="E-posta" value={watch('email')} onChangeText={(value) => setValue('email', value, { shouldValidate: true })} helperText={errors.email?.message} />

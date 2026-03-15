@@ -53,7 +53,7 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.formCard}>
-        <AppHeader title="Hesabına eriş" subtitle="E-posta veya telefon bilgilerinle giriş yapabilirsin." />
+        <AppHeader title="Hesabına eriş" subtitle="E-posta veya telefon bilgilerinle giriş yapabilirsin." rightActions={[]} />
         <View style={styles.form}>
           <AppInput
             label="E-posta veya telefon"

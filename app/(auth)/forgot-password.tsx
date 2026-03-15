@@ -41,7 +41,7 @@ export default function ForgotPasswordScreen() {
       </View>
 
       <View style={styles.formCard}>
-        <AppHeader title="Sıfırlama talebi" subtitle="Bu ekran menüsüz ve odaklı tutulur. Kullanıcının dikkatini dağıtmadan işlem tamamlatmayı hedefler." />
+        <AppHeader title="Sıfırlama talebi" subtitle="Bu ekran menüsüz ve odaklı tutulur. Kullanıcının dikkatini dağıtmadan işlem tamamlatmayı hedefler." rightActions={[]} />
         <View style={styles.form}>
           <AppInput
             label="E-posta veya telefon"
