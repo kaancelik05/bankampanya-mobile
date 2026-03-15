@@ -8,6 +8,42 @@ import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useEarningsDashboard } from '@/hooks/useEarnings';
 
+function resolveStatToneColors(tone?: 'default' | 'success' | 'warning' | 'info') {
+  if (tone === 'success') {
+    return {
+      surface: colors.successSoft,
+      border: '#CBEFD7',
+      value: colors.success,
+      accent: '#8ED7A6',
+    };
+  }
+
+  if (tone === 'warning') {
+    return {
+      surface: '#FFF6E8',
+      border: '#FFE3B3',
+      value: colors.warning,
+      accent: '#FFD089',
+    };
+  }
+
+  if (tone === 'info') {
+    return {
+      surface: colors.navySoft,
+      border: '#D4E0F1',
+      value: colors.navy,
+      accent: '#9CB7DA',
+    };
+  }
+
+  return {
+    surface: colors.surface,
+    border: colors.border,
+    value: colors.navy,
+    accent: '#D8E0EC',
+  };
+}
+
 export default function EarningsScreen() {
   const { data, isLoading, isError } = useEarningsDashboard();
 
@@ -52,14 +88,26 @@ export default function EarningsScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Özet Göstergeler</Text>
         <View style={styles.statsGrid}>
-          {data.stats.map((item) => (
-            <SurfaceCard key={item.id}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{item.valueText}</Text>
+          {data.stats.map((item) => {
+            const toneColors = resolveStatToneColors(item.tone);
+
+            return (
+              <View
+                key={item.id}
+                style={[
+                  styles.statTile,
+                  {
+                    backgroundColor: toneColors.surface,
+                    borderColor: toneColors.border,
+                  },
+                ]}
+              >
+                <View style={[styles.statAccent, { backgroundColor: toneColors.accent }]} />
+                <Text style={[styles.statValue, { color: toneColors.value }]}>{item.valueText}</Text>
                 <Text style={styles.statLabel}>{item.label}</Text>
               </View>
-            </SurfaceCard>
-          ))}
+            );
+          })}
         </View>
       </View>
 
@@ -170,20 +218,31 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.md,
   },
-  statCard: {
-    minWidth: 130,
-    gap: spacing.xs,
+  statTile: {
+    flexBasis: '47%',
+    minHeight: 128,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    padding: spacing.lg,
+    justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
+  statAccent: {
+    width: 44,
+    height: 6,
+    borderRadius: radius.pill,
   },
   statValue: {
-    color: colors.navy,
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '900',
+    lineHeight: 34,
   },
   statLabel: {
     color: colors.textMuted,
     fontSize: 13,
     lineHeight: 18,
     fontWeight: '700',
+    maxWidth: 120,
   },
   historyTopRow: {
     flexDirection: 'row',
