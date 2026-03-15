@@ -1,9 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
-import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { TagPill } from '@/components/common/SurfaceCard';
 import { StateCard } from '@/components/common/StateCard';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
@@ -47,50 +48,60 @@ export default function ProfileScreen() {
         <AppHeader title="Profil" subtitle="Kullanıcı ayarları ve hesap yönetimi." />
       </AnimatedEntrance>
 
-      <AnimatedEntrance delay={50}>
-        <View style={styles.hero}>
-          <Text style={styles.heroName}>{userProfile.fullName}</Text>
-          <Text style={styles.heroMeta}>{userProfile.email}</Text>
-          <Text style={styles.heroMeta}>{userProfile.phone}</Text>
+      <AnimatedEntrance delay={40}>
+        <LinearGradient colors={[colors.navy, '#274A78']} style={styles.hero}>
+          <View style={styles.heroTopRow}>
+            <View style={styles.heroCopyWrap}>
+              <Text style={styles.heroEyebrow}>Hesap merkezi</Text>
+              <Text style={styles.heroName}>{userProfile.fullName}</Text>
+              <Text style={styles.heroMeta}>{userProfile.email}</Text>
+              <Text style={styles.heroMeta}>{userProfile.phone}</Text>
+            </View>
+            <View style={styles.heroBadge}>
+              <Text style={styles.heroBadgeValue}>{userProfile.totalCards}</Text>
+              <Text style={styles.heroBadgeLabel}>kart</Text>
+            </View>
+          </View>
           <Text style={styles.joinedText}>{userProfile.joinedLabel}</Text>
+        </LinearGradient>
+      </AnimatedEntrance>
+
+      <AnimatedEntrance delay={90}>
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{userProfile.totalCards}</Text>
+            <Text style={styles.statLabel}>Kart</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{userProfile.activeTrackingCount}</Text>
+            <Text style={styles.statLabel}>Aktif Takip</Text>
+          </View>
+          <View style={styles.statCardWide}>
+            <Text style={styles.statValue}>{userProfile.monthlyPotentialText}</Text>
+            <Text style={styles.statLabel}>Aylık Potansiyel</Text>
+          </View>
         </View>
       </AnimatedEntrance>
 
-      <AnimatedEntrance delay={100}>
-        <SurfaceCard>
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{userProfile.totalCards}</Text>
-              <Text style={styles.statLabel}>Kart</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{userProfile.activeTrackingCount}</Text>
-              <Text style={styles.statLabel}>Aktif Takip</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{userProfile.monthlyPotentialText}</Text>
-              <Text style={styles.statLabel}>Potansiyel</Text>
-            </View>
-          </View>
-        </SurfaceCard>
-      </AnimatedEntrance>
-
       {profileMenuGroups.map((group, groupIndex) => (
-        <AnimatedEntrance key={group.id} delay={150 + groupIndex * 45}>
+        <AnimatedEntrance key={group.id} delay={140 + groupIndex * 45}>
           <View style={styles.listSection}>
-            <Text style={styles.sectionTitle}>{group.title}</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{group.title}</Text>
+              <Text style={styles.sectionMeta}>{group.items.length} başlık</Text>
+            </View>
             {group.items.map((item) => {
               const itemRoute = 'route' in item ? item.route : undefined;
 
               return (
                 <Pressable key={item.id} style={({ pressed }) => [pressed && styles.pressablePressed]} onPress={() => (itemRoute ? router.push(itemRoute as never) : undefined)}>
-                  <SurfaceCard>
+                  <LinearGradient colors={['#FFFFFF', '#F7F9FC']} style={styles.itemCard}>
                     <View style={styles.itemTopRow}>
                       <Text style={styles.itemTitle}>{item.title}</Text>
                       {itemRoute ? <TagPill tag={{ id: item.id, label: 'Aç', tone: 'info' }} /> : null}
                     </View>
                     <Text style={styles.itemDescription}>{item.description}</Text>
-                  </SurfaceCard>
+                  </LinearGradient>
                 </Pressable>
               );
             })}
@@ -108,15 +119,33 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  pressablePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
+  },
   hero: {
-    backgroundColor: colors.navy,
     borderRadius: radius.xl,
-    padding: spacing['2xl'],
-    gap: spacing.sm,
+    padding: spacing.xl,
+    gap: spacing.lg,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+  },
+  heroCopyWrap: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  heroEyebrow: {
+    color: '#FFB06A',
+    fontSize: 13,
+    fontWeight: '800',
   },
   heroName: {
     color: '#fff',
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '900',
   },
   heroMeta: {
@@ -124,24 +153,58 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  heroBadge: {
+    minWidth: 84,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.14)',
+    borderRadius: radius.xl,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    gap: 2,
+  },
+  heroBadgeValue: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  heroBadgeLabel: {
+    color: '#D6E3F5',
+    fontSize: 12,
+    fontWeight: '700',
+  },
   joinedText: {
     color: '#FFB06A',
     fontSize: 13,
     fontWeight: '800',
-    marginTop: spacing.sm,
   },
-  statsRow: {
+  statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
     gap: spacing.md,
   },
-  statItem: {
-    flex: 1,
+  statCard: {
+    flexBasis: '47%',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    gap: 4,
+  },
+  statCardWide: {
+    width: '100%',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
     gap: 4,
   },
   statValue: {
     color: colors.navy,
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '900',
   },
   statLabel: {
@@ -152,21 +215,39 @@ const styles = StyleSheet.create({
   listSection: {
     gap: spacing.md,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   sectionTitle: {
     color: colors.navy,
     fontSize: 18,
     fontWeight: '900',
   },
+  sectionMeta: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  itemCard: {
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: '#E4EAF2',
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
   itemTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.sm,
   },
   itemTitle: {
     color: colors.navy,
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '800',
+    flex: 1,
   },
   itemDescription: {
     color: colors.textMuted,
@@ -183,9 +264,5 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontWeight: '800',
     fontSize: 16,
-  },
-  pressablePressed: {
-    transform: [{ scale: 0.99 }],
-    opacity: 0.96,
   },
 });
