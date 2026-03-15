@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
-    padding: spacing.lg,
+    padding: spacing.xl,
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
@@ -30,12 +30,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.navy,
-    fontSize: 18,
+    fontSize: 20,
+    lineHeight: 26,
     fontWeight: '800',
   },
   description: {
     color: colors.textMuted,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 21,
   },
 });

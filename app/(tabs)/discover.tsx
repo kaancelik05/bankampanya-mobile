@@ -18,7 +18,7 @@ export default function DiscoverScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Keşfet" subtitle="Kategori, kart türü ve ödül tipine göre fırsatları filtrele." />
+      <AppHeader title="Keşfet" subtitle="Kategori, kart türü ve ödül tipine göre fırsatları filtrele." showBackButton={false} />
 
       <Pressable style={styles.searchBox}>
         <Text style={styles.searchLabel}>Kampanya ara</Text>

@@ -13,7 +13,7 @@ export default function WalletScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Cüzdanım" subtitle="Kartlarını yönet, sana uygun fırsatları daha doğru gösterelim." />
+      <AppHeader title="Cüzdanım" subtitle="Kartlarını yönet, sana uygun fırsatları daha doğru gösterelim." showBackButton={false} />
 
       <SurfaceCard>
         <Text style={styles.summaryTitle}>Kayıtlı Kart Sayısı: {walletCards.length}</Text>

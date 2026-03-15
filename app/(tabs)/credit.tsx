@@ -29,7 +29,7 @@ export default function CreditScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Kredi" subtitle="Kredi, nakit avans ve taksitli nakit avans fırsatlarını tutara göre karşılaştır." />
+      <AppHeader title="Kredi" subtitle="Kredi, nakit avans ve taksitli nakit avans fırsatlarını tutara göre karşılaştır." showBackButton={false} />
 
       <SurfaceCard>
         <Text style={styles.sectionTitle}>Tür Seçimi</Text>

@@ -53,7 +53,7 @@ export default function ForgotPasswordScreen() {
       </View>
 
       {resetMutation.isError ? <StateCard title="İstek gönderilemedi" description="Sıfırlama işlemi şu an tamamlanamadı." tone="danger" /> : null}
-      {resetMutation.isSuccess ? <StateCard title="İstek alındı" description={resetMutation.data.message} /> : null}
+      {resetMutation.isSuccess ? <StateCard title="İstek alındı" description={resetMutation.data?.message ?? 'Sıfırlama isteğin başarıyla oluşturuldu.'} /> : null}
       <PrimaryButton label={resetMutation.isPending ? 'Gönderiliyor...' : 'Sıfırlama Bağlantısı Gönder'} onPress={handleSubmit((values) => resetMutation.mutate(values))} />
 
       <Text style={styles.info}>Bağlantı veya doğrulama kodu ilgili iletişim kanalına gönderilir.</Text>

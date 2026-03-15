@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
@@ -11,11 +12,26 @@ import { spacing } from '@/theme/spacing';
 import { useOnboardingOptions } from '@/hooks/useOnboarding';
 
 export default function OnboardingInterestsScreen() {
-  const { selectedCategories, selectedBrands, setSelectedCategories, setSelectedBrands } = useOnboardingStore();
+  const {
+    selectedCategories,
+    selectedBrands,
+    setSelectedCategories,
+    setSelectedBrands,
+    canContinueFromInterests,
+    getProgressStep,
+  } = useOnboardingStore();
   const { data: options } = useOnboardingOptions();
+
+  const canContinue = canContinueFromInterests();
+  const progressStep = useMemo(() => getProgressStep(), [getProgressStep, selectedCategories, selectedBrands]);
 
   const toggle = (value: string, values: string[], setter: (next: string[]) => void) => {
     setter(values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
+  };
+
+  const handleContinue = () => {
+    if (!canContinue) return;
+    router.push('/(auth)/onboarding-account');
   };
 
   return (
@@ -25,7 +41,7 @@ export default function OnboardingInterestsScreen() {
         subtitle="Sık harcama yaptığın alanları seç, sana daha güçlü ve kişisel öneriler hazırlayalım."
       />
 
-      <ProgressSteps current={2} total={3} title="Onboarding adımları" />
+      <ProgressSteps current={progressStep} total={3} title="Onboarding adımları" />
 
       <View style={styles.section}>
         <Text style={styles.label}>Kategoriler</Text>
@@ -63,9 +79,13 @@ export default function OnboardingInterestsScreen() {
         </View>
       </View>
 
-      <PrimaryButton label="Devam Et" onPress={() => router.push('/(auth)/onboarding-account')} />
+      <PrimaryButton label="Devam Et" onPress={handleContinue} />
 
-      <Text style={styles.footer}>Örn. akaryakıt ve market tercihin varsa ilgili kampanyaları öne çıkaracağız.</Text>
+      <Text style={[styles.footer, !canContinue && styles.footerWarning]}>
+        {canContinue
+          ? 'Örn. akaryakıt ve market tercihin varsa ilgili kampanyaları öne çıkaracağız.'
+          : 'Devam etmek için en az 1 kategori veya 1 marka seç.'}
+      </Text>
     </AppScreen>
   );
 }
@@ -93,5 +113,9 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 20,
+  },
+  footerWarning: {
+    color: colors.primary,
+    fontWeight: '700',
   },
 });

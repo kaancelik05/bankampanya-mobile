@@ -5,6 +5,14 @@ export type ProfileMenuItem = {
   route?: string;
 };
 
+export type WalletCard = {
+  id: string;
+  bankName: string;
+  cardType: string;
+  customName: string;
+  isActive: boolean;
+};
+
 export type UserProfile = {
   fullName: string;
   email: string;

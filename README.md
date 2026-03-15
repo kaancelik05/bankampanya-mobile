@@ -58,9 +58,34 @@ npx tsc --noEmit
 ## Notlar
 
 - Uygulama şu anda typed mock data ile çalışır.
+- `app.json -> expo.extra` altında backend hazırlığı için `apiBaseUrl`, `apiMode`, `enableNetworkLogging` tanımlanmıştır.
+- `apiMode: mock` iken uygulama mevcut mock servisleri kullanır.
+- `apiMode: remote` yapıldığında servisler gerçek backend endpointlerine istek atmaya hazırdır.
 - Mimari, gerçek backend entegrasyonuna geçişi kolaylaştıracak şekilde hazırlanmıştır.
 - Ana tab yapısı: `Senin İçin / Keşfet / Takip / Kredi / Cüzdanım`
 
+## Backend hazırlığı
+
+Mobile tarafta şu hazırlıklar eklenmiştir:
+
+- `src/config/env.ts` ile environment config okuma
+- `src/services/api/client.ts` ile ortak HTTP client
+- `src/services/api/runtime.ts` ile mock/remote çalışma modu
+- servislerde mock ve remote ayrımı için entegrasyon zemini
+
+Varsayılan local backend URL:
+
+```text
+http://localhost:5001/api
+```
+
+Gerçek backend'e geçerken ilk adım, `app.json` içindeki:
+
+- `expo.extra.apiMode` değerini `remote`
+- gerekirse `expo.extra.apiBaseUrl` değerini backend adresine
+
+çevirmek olacaktır.
+
 ## Sonraki adım
 
-Bir sonraki teknik adım, `src/services/api` altında gerçek API client ve env tabanlı entegrasyon altyapısını eklemektir.
+Bir sonraki teknik adım, ayrı klasörde kurulacak `.NET 9` backend projesinin endpoint sözleşmelerini bu servislerle eşleştirmektir.

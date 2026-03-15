@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { StateCard } from '@/components/common/StateCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { colors } from '@/theme/colors';
@@ -23,6 +24,7 @@ export default function CampaignDetailScreen() {
     return (
       <AppScreen>
         <AppHeader title="Kampanya Detayı" subtitle="Kayıt bulunamadı" />
+        <StateCard title="Kampanya bulunamadı" description="Bu kampanya şu anda görüntülenemiyor veya kaldırılmış olabilir." tone="warning" />
       </AppScreen>
     );
   }

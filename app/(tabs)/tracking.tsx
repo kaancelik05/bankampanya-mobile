@@ -28,7 +28,7 @@ export default function TrackingScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Takip" subtitle="Katıldığın kampanyaları, ilerlemelerini ve son tarihleri buradan yönet." />
+      <AppHeader title="Takip" subtitle="Katıldığın kampanyaları, ilerlemelerini ve son tarihleri buradan yönet." showBackButton={false} />
 
       <View style={styles.tabsRow}>
         {tabs.map((tab) => {

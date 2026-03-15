@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { StateCard } from '@/components/common/StateCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { colors } from '@/theme/colors';
@@ -18,6 +19,7 @@ export default function CreditDetailScreen() {
     return (
       <AppScreen>
         <AppHeader title="Kredi Detayı" subtitle="Kayıt bulunamadı" />
+        <StateCard title="Teklif bulunamadı" description="Bu kredi teklifi şu anda görüntülenemiyor veya artık aktif olmayabilir." tone="warning" />
       </AppScreen>
     );
   }

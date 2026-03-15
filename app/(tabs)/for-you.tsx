@@ -20,7 +20,7 @@ export default function ForYouScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Senin İçin" subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada." />
+      <AppHeader title="Senin İçin" subtitle="Kartlarına ve tercih ettiğin markalara göre seçilmiş fırsatlar burada." showBackButton={false} />
 
       <Pressable style={styles.aiSearchBox} onPress={() => router.push('/assistant')}>
         <Text style={styles.aiSearchTitle}>AI destekli arama</Text>

@@ -28,7 +28,10 @@ export function SelectableChip({
         active && styles.active,
       ]}
     >
-      <Text style={[styles.label, active && styles.activeLabel]}>{label}</Text>
+      <View style={styles.labelRow}>
+        <Text style={[styles.label, active && styles.activeLabel]}>{label}</Text>
+        {active ? <Text style={styles.checkmark}>✓</Text> : null}
+      </View>
       {helperText ? <Text style={[styles.helper, active && styles.activeHelper]}>{helperText}</Text> : null}
     </Pressable>
   );
@@ -49,17 +52,24 @@ const styles = StyleSheet.create({
     minWidth: '47%',
     padding: spacing.lg,
     borderRadius: radius.lg,
-    gap: 4,
+    gap: 6,
     ...shadows.card,
   },
   active: {
     borderColor: colors.primary,
     backgroundColor: colors.primarySoft,
   },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
   label: {
     color: colors.text,
     fontWeight: '700',
     fontSize: 14,
+    flexShrink: 1,
   },
   helper: {
     color: colors.textMuted,
@@ -71,5 +81,10 @@ const styles = StyleSheet.create({
   },
   activeHelper: {
     color: colors.navy,
+  },
+  checkmark: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '900',
   },
 });

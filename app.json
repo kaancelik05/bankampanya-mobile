@@ -4,6 +4,11 @@
     "slug": "bankampanya-mobile",
     "version": "1.0.0",
     "scheme": "bankampanya",
+    "extra": {
+      "apiBaseUrl": "http://localhost:5001/api",
+      "apiMode": "mock",
+      "enableNetworkLogging": false
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

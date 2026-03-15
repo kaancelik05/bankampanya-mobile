@@ -14,7 +14,7 @@ export default function NotificationsScreen() {
 
   return (
     <AppScreen>
-      <AppHeader title="Bildirimler" subtitle="Fırsat, takip ve işlem güncellemeleri burada listelenir." />
+      <AppHeader title="Bildirimler" subtitle="Fırsat, takip ve işlem güncellemeleri burada listelenir." showBackButton={false} />
 
       {isLoading ? <StateCard title="Yükleniyor" description="Bildirimlerin hazırlanıyor..." /> : null}
       {isError ? <StateCard title="Bildirimler alınamadı" description="Şu an bildirimler yüklenemedi." tone="danger" /> : null}

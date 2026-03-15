@@ -11,16 +11,18 @@ type ProgressStepsProps = {
 };
 
 export function ProgressSteps({ current, total, title }: ProgressStepsProps) {
+  const safeCurrent = Math.min(Math.max(current, 1), total);
+
   return (
     <View style={styles.wrapper}>
       {title ? <Text style={styles.title}>{title}</Text> : null}
       <View style={styles.row}>
         {Array.from({ length: total }).map((_, index) => {
-          const done = index < current;
+          const done = index < safeCurrent;
           return <View key={index} style={[styles.dot, done && styles.dotDone]} />;
         })}
       </View>
-      <Text style={styles.label}>{current} / {total} adım tamamlandı</Text>
+      <Text style={styles.label}>{safeCurrent} / {total} adım tamamlandı</Text>
     </View>
   );
 }

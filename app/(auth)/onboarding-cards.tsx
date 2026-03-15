@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { ProgressSteps } from '@/components/common/ProgressSteps';
@@ -11,11 +12,26 @@ import { spacing } from '@/theme/spacing';
 import { useOnboardingOptions } from '@/hooks/useOnboarding';
 
 export default function OnboardingCardsScreen() {
-  const { selectedBanks, selectedCardTypes, setSelectedBanks, setSelectedCardTypes } = useOnboardingStore();
+  const {
+    selectedBanks,
+    selectedCardTypes,
+    setSelectedBanks,
+    setSelectedCardTypes,
+    canContinueFromCards,
+    getProgressStep,
+  } = useOnboardingStore();
   const { data: options } = useOnboardingOptions();
+
+  const canContinue = canContinueFromCards();
+  const progressStep = useMemo(() => getProgressStep(), [getProgressStep, selectedBanks, selectedCardTypes]);
 
   const toggle = (value: string, values: string[], setter: (next: string[]) => void) => {
     setter(values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
+  };
+
+  const handleContinue = () => {
+    if (!canContinue) return;
+    router.push('/(auth)/onboarding-interests');
   };
 
   return (
@@ -25,7 +41,7 @@ export default function OnboardingCardsScreen() {
         subtitle="Kullandığın bankaları ve kart türlerini belirterek sana daha doğru kampanyalar gösterelim."
       />
 
-      <ProgressSteps current={1} total={3} title="Onboarding adımları" />
+      <ProgressSteps current={progressStep} total={3} title="Onboarding adımları" />
 
       <View style={styles.section}>
         <Text style={styles.label}>Bankalar</Text>
@@ -63,11 +79,13 @@ export default function OnboardingCardsScreen() {
         </View>
       </View>
 
-      <Pressable onPress={() => router.push('/(auth)/onboarding-interests')}>
-        <PrimaryButton label="Devam Et" />
-      </Pressable>
+      <PrimaryButton label="Devam Et" onPress={handleContinue} />
 
-      <Text style={styles.footer}>İstersen seçimlerini daha sonra Cüzdanım ekranından güncelleyebilirsin.</Text>
+      <Text style={[styles.footer, !canContinue && styles.footerWarning]}>
+        {canContinue
+          ? 'İstersen seçimlerini daha sonra Cüzdanım ekranından güncelleyebilirsin.'
+          : 'Devam etmek için en az 1 banka ve 1 kart türü seç.'}
+      </Text>
     </AppScreen>
   );
 }
@@ -95,5 +113,9 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 20,
+  },
+  footerWarning: {
+    color: colors.primary,
+    fontWeight: '700',
   },
 });
