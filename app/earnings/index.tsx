@@ -73,7 +73,7 @@ export default function EarningsScreen() {
         <Text style={styles.heroEyebrow}>{data.summary.monthLabel}</Text>
         <Text style={styles.heroTitle}>Bu ay kazandığın</Text>
         <Text style={styles.heroValue}>{data.summary.totalEarnedText}</Text>
-        <View style={styles.heroMetaWrap}>
+        <View style={styles.heroMetaWrap}> 
           <View style={styles.heroMetaCard}>
             <Text style={styles.heroMetaLabel}>Bekleyen ödül</Text>
             <Text style={styles.heroMetaValue}>{data.summary.pendingRewardText}</Text>
@@ -111,10 +111,13 @@ export default function EarningsScreen() {
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Bekleyen ve Kazanılanlar</Text>
+      <View style={styles.section}> 
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Bekleyen ve Kazanılanlar</Text>
+          <Text style={styles.sectionHint}>Son hareketler</Text>
+        </View>
         {data.history.map((item) => (
-          <SurfaceCard key={item.id}>
+          <View key={item.id} style={styles.historyCard}>
             <View style={styles.historyTopRow}>
               <Text style={styles.historyBank}>{item.bankName}</Text>
               <TagPill
@@ -130,12 +133,15 @@ export default function EarningsScreen() {
               <Text style={styles.historyReward}>{item.rewardText}</Text>
               <Text style={styles.historyDate}>{item.dateLabel}</Text>
             </View>
-          </SurfaceCard>
+          </View>
         ))}
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Potansiyel Kazanç</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Potansiyel Kazanç</Text>
+          <Text style={styles.sectionHint}>En yüksek fırsatlar</Text>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
           {data.potential.map((item) => (
             <View key={item.id} style={styles.horizontalCard}>
@@ -143,7 +149,10 @@ export default function EarningsScreen() {
                 <Text style={styles.historyBank}>{item.bankName}</Text>
                 <Text style={styles.potentialTitle}>{item.title}</Text>
                 <Text style={styles.potentialValue}>{item.potentialText}</Text>
-                <Text style={styles.potentialDescription}>{item.remainingActionText}</Text>
+                <View style={styles.potentialActionBox}>
+                  <Text style={styles.potentialActionLabel}>Kalan adım</Text>
+                  <Text style={styles.potentialDescription}>{item.remainingActionText}</Text>
+                </View>
               </View>
             </View>
           ))}
@@ -151,9 +160,14 @@ export default function EarningsScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Dikkat Gerektirenler</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Dikkat Gerektirenler</Text>
+          <Text style={styles.sectionHint}>Hızlı aksiyon önerileri</Text>
+        </View>
         {data.alerts.map((item) => (
-          <StateCard key={item.id} title={item.title} description={item.description} tone={item.tone === 'info' ? 'default' : item.tone} />
+          <View key={item.id} style={styles.alertCardWrap}>
+            <StateCard title={item.title} description={item.description} tone={item.tone === 'info' ? 'default' : item.tone} />
+          </View>
         ))}
       </View>
     </AppScreen>
@@ -208,10 +222,21 @@ const styles = StyleSheet.create({
   section: {
     gap: spacing.md,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   sectionTitle: {
     color: colors.navy,
     fontSize: 20,
     fontWeight: '900',
+  },
+  sectionHint: {
+    color: colors.textMuted,
+    fontSize: 13,
+    fontWeight: '700',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -244,11 +269,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     maxWidth: 120,
   },
+  historyCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
   historyTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   historyBottomRow: {
     flexDirection: 'row',
@@ -265,7 +298,7 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontSize: 18,
     fontWeight: '800',
-    marginBottom: spacing.xs,
+    lineHeight: 24,
   },
   historyReward: {
     color: colors.success,
@@ -295,15 +328,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '800',
     marginTop: spacing.xs,
+    lineHeight: 24,
   },
   potentialValue: {
     color: colors.success,
     fontSize: 24,
     fontWeight: '900',
   },
+  potentialActionBox: {
+    marginTop: spacing.sm,
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    gap: spacing.xs,
+  },
+  potentialActionLabel: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+  },
   potentialDescription: {
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 20,
+  },
+  alertCardWrap: {
+    borderRadius: radius.xl,
+    overflow: 'hidden',
   },
 });
