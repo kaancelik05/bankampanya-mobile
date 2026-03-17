@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,14 +11,12 @@ import { StateCard } from '@/components/common/StateCard';
 import { SurfaceCard } from '@/components/common/SurfaceCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { AppInput } from '@/components/ui/AppInput';
-import { trackedCampaignsById } from '@/mocks/tracking';
 import { categories, brands } from '@/mocks/onboarding';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useCreateTrackingEventMutation } from '@/hooks/useTrackingMutations';
-
-const selectedTrackingId = 'cmp-1';
+import { useTrackedCampaignDetail } from '@/hooks/useTracking';
 
 const addEventSchema = z.object({
   dateLabel: z.string().min(3, 'Tarih alanı zorunludur.'),
@@ -31,8 +29,9 @@ const addEventSchema = z.object({
 type AddEventFormValues = z.infer<typeof addEventSchema>;
 
 export default function AddTrackingEventScreen() {
-  const campaign = trackedCampaignsById[selectedTrackingId];
+  const { id } = useLocalSearchParams<{ id: string }>();
   const createTrackingEventMutation = useCreateTrackingEventMutation();
+  const { data: campaign, isLoading, isError } = useTrackedCampaignDetail(id);
   const {
     handleSubmit,
     setValue,
@@ -60,6 +59,24 @@ export default function AddTrackingEventScreen() {
   }, [amountValue]);
 
   const isValidPreview = validationMessage.includes('uygun');
+
+  if (isLoading) {
+    return (
+      <AppScreen>
+        <AppHeader title="İşlem Ekle" subtitle="Kampanya bilgileri hazırlanıyor." />
+        <StateCard title="Takip yükleniyor" description="İşlem ekleme formu hazırlanıyor..." />
+      </AppScreen>
+    );
+  }
+
+  if (isError || !campaign || !id) {
+    return (
+      <AppScreen>
+        <AppHeader title="İşlem Ekle" subtitle="Kayıt bulunamadı" />
+        <StateCard title="Takip bulunamadı" description="İşlem eklemek istediğin takip kampanyası şu an görüntülenemiyor." tone="warning" />
+      </AppScreen>
+    );
+  }
 
   return (
     <AppScreen>
@@ -133,10 +150,17 @@ export default function AddTrackingEventScreen() {
         <PrimaryButton
           label={createTrackingEventMutation.isPending ? 'Kaydediliyor...' : 'İşlemi Kaydet'}
           onPress={handleSubmit((values) =>
-            createTrackingEventMutation.mutate({
-              trackingId: selectedTrackingId,
-              ...values,
-            })
+            createTrackingEventMutation.mutate(
+              {
+                trackingId: id,
+                ...values,
+              },
+              {
+                onSuccess: () => {
+                  router.replace(`/tracking/${id}`);
+                },
+              }
+            )
           )}
           disabled={createTrackingEventMutation.isPending}
         />

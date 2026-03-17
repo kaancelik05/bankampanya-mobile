@@ -6,12 +6,14 @@ import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { TagPill } from '@/components/common/SurfaceCard';
 import { StateCard } from '@/components/common/StateCard';
+import { useAuthStore } from '@/store/auth-store';
 import { colors } from '@/theme/colors';
 import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useProfileMenuGroups, useUserProfile } from '@/hooks/useProfile';
 
 export default function ProfileScreen() {
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const { data: userProfile, isLoading: userLoading, isError: userError } = useUserProfile();
   const { data: profileMenuGroups = [], isLoading: menuLoading, isError: menuError } = useProfileMenuGroups();
 
@@ -110,7 +112,15 @@ export default function ProfileScreen() {
       ))}
 
       <AnimatedEntrance delay={320}>
-        <Pressable style={({ pressed }) => [styles.logoutButton, pressed && styles.pressablePressed]}>
+        <Pressable
+          testID="profile-logout"
+          accessibilityLabel="Çıkış Yap"
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.logoutButton, pressed && styles.pressablePressed]}
+          onPress={() => {
+            void clearAuth().then(() => router.replace('/(auth)/login'));
+          }}
+        >
           <Text style={styles.logoutText}>Çıkış Yap</Text>
         </Pressable>
       </AnimatedEntrance>

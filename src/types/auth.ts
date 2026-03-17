@@ -28,9 +28,19 @@ export type PasswordResetRequest = {
   identifier: string;
 };
 
+export type RefreshTokenRequest = {
+  refreshToken: string;
+};
+
+export type LogoutRequest = {
+  refreshToken: string;
+};
+
 export type AuthResponse = {
   success: boolean;
   user: AuthUser;
   session?: AuthSession;
   message?: string;
 };
+
+export type CurrentUserResponse = AuthUser;

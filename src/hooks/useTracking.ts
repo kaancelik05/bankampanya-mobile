@@ -5,6 +5,7 @@ export function useTrackedCampaigns() {
   return useQuery({
     queryKey: ['tracking', 'list'],
     queryFn: getTrackedCampaigns,
+    retry: false,
   });
 }
 
@@ -13,5 +14,6 @@ export function useTrackedCampaignDetail(id?: string) {
     queryKey: ['tracking', 'detail', id],
     queryFn: () => getTrackedCampaignById(id || ''),
     enabled: !!id,
+    retry: false,
   });
 }

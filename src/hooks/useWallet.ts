@@ -1,13 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { walletCards } from '@/mocks/wallet';
-
-export async function getWalletCards() {
-  return Promise.resolve(walletCards);
-}
+import { getWalletCards } from '@/services/api/wallet';
 
 export function useWalletCards() {
   return useQuery({
     queryKey: ['wallet', 'cards'],
     queryFn: getWalletCards,
+    retry: false,
   });
 }

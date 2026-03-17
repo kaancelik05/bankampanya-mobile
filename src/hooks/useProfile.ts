@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getProfileMenuItems, getUserProfile } from '@/services/api/profile';
-import { profileMenuGroups } from '@/mocks/profile';
+import { getProfileMenuGroups, getProfileMenuItems, getUserProfile } from '@/services/api/profile';
 
 export function useUserProfile() {
   return useQuery({
@@ -19,6 +18,6 @@ export function useProfileMenuItems() {
 export function useProfileMenuGroups() {
   return useQuery({
     queryKey: ['profile', 'menu-groups'],
-    queryFn: async () => Promise.resolve(profileMenuGroups),
+    queryFn: getProfileMenuGroups,
   });
 }

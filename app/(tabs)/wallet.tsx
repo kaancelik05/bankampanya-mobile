@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedEntrance } from '@/components/common/AnimatedEntrance';
@@ -21,12 +21,24 @@ export default function WalletScreen() {
   const passiveCards = walletCards.filter((card) => !card.isActive).length;
 
   const handleDeleteCard = (id: string, customName: string) => {
+    const confirmDelete = () => deleteWalletCardMutation.mutate({ id });
+
+    if (Platform.OS === 'web') {
+      const confirmed = typeof window !== 'undefined' ? window.confirm(`${customName} kartını silmek istediğine emin misin? Bu işlem geri alınamaz.`) : false;
+
+      if (confirmed) {
+        confirmDelete();
+      }
+
+      return;
+    }
+
     Alert.alert('Kartı Sil', `${customName} kartını silmek istediğine emin misin? Bu işlem geri alınamaz.`, [
       { text: 'Vazgeç', style: 'cancel' },
       {
         text: 'Sil',
         style: 'destructive',
-        onPress: () => deleteWalletCardMutation.mutate({ id }),
+        onPress: confirmDelete,
       },
     ]);
   };
@@ -120,6 +132,11 @@ export default function WalletScreen() {
 
                   <View style={styles.cardActions}>
                     <Pressable
+                      key={`${card.id}-${card.isActive ? 'active' : 'inactive'}`}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${card.customName} durumunu ${card.isActive ? 'pasif' : 'aktif'} yap`}
+                      accessibilityState={{ busy: isBusy }}
+                      testID={`wallet-toggle-${card.id}`}
                       style={({ pressed }) => [
                         styles.statusButton,
                         card.isActive ? styles.statusButtonPassive : styles.statusButtonActive,
@@ -136,6 +153,11 @@ export default function WalletScreen() {
 
                     {!card.isActive ? (
                       <Pressable
+                        key={`${card.id}-delete`}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${card.customName} kartını sil`}
+                        accessibilityState={{ busy: isBusy }}
+                        testID={`wallet-delete-${card.id}`}
                         style={({ pressed }) => [styles.deleteButton, isBusy && styles.buttonDisabled, pressed && !isBusy && styles.pressablePressed]}
                         onPress={() => handleDeleteCard(card.id, card.customName)}
                         disabled={isBusy}
@@ -151,12 +173,30 @@ export default function WalletScreen() {
         </View>
       </AnimatedEntrance>
 
-      {toggleWalletCardStatusMutation.isError ? <StateCard title="Kart durumu güncellenemedi" description="Kart durumu şu an değiştirilemedi." tone="danger" /> : null}
-      {deleteWalletCardMutation.isError ? <StateCard title="Kart silinemedi" description="Kart şu an silinemedi. Aktif kartları önce pasif yapman gerekir." tone="danger" /> : null}
+      {toggleWalletCardStatusMutation.isError ? (
+        <StateCard
+          title="Kart durumu güncellenemedi"
+          description={toggleWalletCardStatusMutation.error instanceof Error ? toggleWalletCardStatusMutation.error.message : 'Kart durumu şu an değiştirilemedi.'}
+          tone="danger"
+        />
+      ) : null}
+      {deleteWalletCardMutation.isError ? (
+        <StateCard
+          title="Kart silinemedi"
+          description={deleteWalletCardMutation.error instanceof Error ? deleteWalletCardMutation.error.message : 'Kart şu an silinemedi. Aktif kartları önce pasif yapman gerekir.'}
+          tone="danger"
+        />
+      ) : null}
 
       <AnimatedEntrance delay={200}>
         <View style={styles.actions}>
-          <Pressable style={({ pressed }) => [styles.primaryAction, pressed && styles.pressablePressed]} onPress={() => router.push('/wallet/add-card')}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Yeni kart ekle"
+            testID="wallet-add-card"
+            style={({ pressed }) => [styles.primaryAction, pressed && styles.pressablePressed]}
+            onPress={() => router.push('/wallet/add-card')}
+          >
             <Text style={styles.primaryActionText}>Kart Ekle</Text>
           </Pressable>
         </View>

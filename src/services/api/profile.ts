@@ -1,7 +1,20 @@
-import { profileMenuItems, userProfile } from '@/mocks/profile';
+import { profileMenuGroups, profileMenuItems, userProfile } from '@/mocks/profile';
 import { apiRequest } from '@/services/api/client';
 import { isMockMode } from '@/services/api/runtime';
 import type { ProfileMenuItem, UserProfile } from '@/types/profile';
+
+function mapProfileMenuItems(groups: Array<{ items: ProfileMenuItem[] }>): ProfileMenuItem[] {
+  return groups.flatMap((group) => group.items);
+}
+
+type RemoteProfileResponse = {
+  summary: UserProfile;
+  menuGroups: Array<{
+    id: string;
+    title: string;
+    items: ProfileMenuItem[];
+  }>;
+};
 
 async function getUserProfileMock(): Promise<UserProfile> {
   return Promise.resolve(userProfile);
@@ -16,7 +29,8 @@ export async function getUserProfile(): Promise<UserProfile> {
     return getUserProfileMock();
   }
 
-  return apiRequest<UserProfile>('/profile');
+  const response = await apiRequest<RemoteProfileResponse>('/api/mobile/profile');
+  return response.summary;
 }
 
 export async function getProfileMenuItems(): Promise<ProfileMenuItem[]> {
@@ -24,5 +38,15 @@ export async function getProfileMenuItems(): Promise<ProfileMenuItem[]> {
     return getProfileMenuItemsMock();
   }
 
-  return apiRequest<ProfileMenuItem[]>('/profile/menu-items');
+  const response = await apiRequest<RemoteProfileResponse>('/api/mobile/profile');
+  return mapProfileMenuItems(response.menuGroups);
+}
+
+export async function getProfileMenuGroups() {
+  if (isMockMode()) {
+    return Promise.resolve(profileMenuGroups);
+  }
+
+  const response = await apiRequest<RemoteProfileResponse>('/api/mobile/profile');
+  return response.menuGroups;
 }

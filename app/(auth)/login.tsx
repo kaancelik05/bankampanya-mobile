@@ -23,7 +23,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
-  const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
+  const setAuthSession = useAuthStore((state) => state.setAuthSession);
   const loginMutation = useLoginMutation();
   const {
     handleSubmit,
@@ -39,8 +39,11 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await loginMutation.mutateAsync(values);
-    setAuthenticated(true);
+    const response = await loginMutation.mutateAsync(values);
+    setAuthSession({
+      user: response.user,
+      session: response.session,
+    });
     router.replace('/(tabs)/for-you');
   };
 
@@ -57,12 +60,16 @@ export default function LoginScreen() {
         <View style={styles.form}>
           <AppInput
             label="E-posta veya telefon"
+            testID="login-identifier"
+            accessibilityLabel="E-posta veya telefon"
             value={watch('identifier')}
             onChangeText={(value) => setValue('identifier', value, { shouldValidate: true })}
             helperText={errors.identifier?.message}
           />
           <AppInput
             label="Şifre"
+            testID="login-password"
+            accessibilityLabel="Şifre"
             value={watch('password')}
             onChangeText={(value) => setValue('password', value, { shouldValidate: true })}
             helperText={errors.password?.message}
@@ -71,9 +78,14 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.actions}>
-        {loginMutation.isError ? <StateCard title="Giriş yapılamadı" description="Lütfen bilgilerini kontrol edip tekrar dene." tone="danger" /> : null}
-        <PrimaryButton label={loginMutation.isPending ? 'Giriş Yapılıyor...' : 'Giriş Yap'} onPress={handleSubmit(onSubmit)} />
-        <SecondaryButton label="Şifremi Unuttum" onPress={() => router.push('/(auth)/forgot-password')} />
+        {loginMutation.isError ? <StateCard title="Giriş yapılamadı" description={loginMutation.error instanceof Error ? loginMutation.error.message : 'Lütfen bilgilerini kontrol edip tekrar dene.'} tone="danger" /> : null}
+        <PrimaryButton
+          label={loginMutation.isPending ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+          testID="login-submit"
+          accessibilityLabel="Giriş Yap"
+          onPress={handleSubmit(onSubmit)}
+        />
+        <SecondaryButton label="Şifremi Unuttum" testID="forgot-password" accessibilityLabel="Şifremi Unuttum" onPress={() => router.push('/(auth)/forgot-password')} />
       </View>
 
       <Pressable onPress={() => router.push('/(auth)/register')}>

@@ -53,6 +53,8 @@ export default function OnboardingInterestsScreen() {
                 key={category}
                 label={category}
                 active={active}
+                testID={`interest-category-${category.toLowerCase().replace(/[^a-z0-9çğıöşü]+/gi, '-')}`}
+                accessibilityLabel={`${category} kategorisini ${active ? 'seçili' : 'seç'}`}
                 onPress={() => toggle(category, selectedCategories, setSelectedCategories)}
               />
             );
@@ -71,6 +73,8 @@ export default function OnboardingInterestsScreen() {
                 label={brand}
                 helperText="Öne çıkan fırsatları şekillendirir"
                 active={active}
+                accessibilityLabel={`${brand} markasını ${active ? 'seçili' : 'seç'}`}
+                testID={`interest-brand-${brand.toLowerCase().replace(/[^a-z0-9çğıöşü]+/gi, '-')}`}
                 onPress={() => toggle(brand, selectedBrands, setSelectedBrands)}
                 variant="tile"
               />

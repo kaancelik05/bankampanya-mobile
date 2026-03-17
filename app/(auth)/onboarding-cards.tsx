@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { ProgressSteps } from '@/components/common/ProgressSteps';
+import { SelectableChip } from '@/components/common/SelectableChip';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { useOnboardingStore } from '@/store/onboarding-store';
 import { colors } from '@/theme/colors';
@@ -56,6 +57,10 @@ export default function OnboardingCardsScreen() {
                   {active ? <Text style={styles.selectedMark}>✓</Text> : null}
                 </View>
                 <Pressable
+                  testID={`bank-option-${bank.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${bank} bankasını ${active ? 'seçili' : 'seç'}`}
+                  accessibilityState={{ selected: active }}
                   style={[styles.bankSelectButton, active && styles.bankSelectButtonActive]}
                   onPress={() => toggle(bank, selectedBanks, setSelectedBanks)}
                 >
@@ -77,19 +82,20 @@ export default function OnboardingCardsScreen() {
             const active = selectedCardTypes.includes(type);
 
             return (
-              <Pressable key={type} style={[styles.cardTypeCard, active && styles.cardTypeCardActive]} onPress={() => toggle(type, selectedCardTypes, setSelectedCardTypes)}>
-                <View style={styles.cardTypeTopRow}>
-                  <Text style={[styles.cardTypeTitle, active && styles.cardTypeTitleActive]}>{type}</Text>
-                  {active ? <Text style={styles.selectedMark}>✓</Text> : null}
-                </View>
-                <Text style={[styles.cardTypeDescription, active && styles.cardTypeDescriptionActive]}>
-                  {type === 'Kredi Kartı'
-                    ? 'Nakit iade, puan ve taksit kampanyalarını öne çıkarır.'
-                    : type === 'Banka Kartı'
-                      ? 'Günlük harcamaya yönelik fırsatları daha iyi eşleştirir.'
-                      : 'İlgili kart tipine göre sana uygun fırsatları öne çıkarır.'}
-                </Text>
-              </Pressable>
+              <SelectableChip
+                key={type}
+                label={type}
+                active={active}
+                testID={`card-type-${type.toLowerCase().replace(/[^a-z0-9çğıöşü]+/gi, '-')}`}
+                accessibilityLabel={`${type} kart türünü ${active ? 'seçili' : 'seç'}`}
+                helperText={type === 'Kredi Kartı'
+                  ? 'Nakit iade, puan ve taksit kampanyalarını öne çıkarır.'
+                  : type === 'Banka Kartı'
+                    ? 'Günlük harcamaya yönelik fırsatları daha iyi eşleştirir.'
+                    : 'İlgili kart tipine göre sana uygun fırsatları öne çıkarır.'}
+                onPress={() => toggle(type, selectedCardTypes, setSelectedCardTypes)}
+                variant="tile"
+              />
             );
           })}
         </View>
@@ -182,41 +188,6 @@ const styles = StyleSheet.create({
   },
   cardTypeGrid: {
     gap: spacing.md,
-  },
-  cardTypeCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    gap: spacing.sm,
-  },
-  cardTypeCardActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primarySoft,
-  },
-  cardTypeTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  cardTypeTitle: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '800',
-    flex: 1,
-  },
-  cardTypeTitleActive: {
-    color: colors.primary,
-  },
-  cardTypeDescription: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  cardTypeDescriptionActive: {
-    color: colors.navy,
   },
   footer: {
     color: colors.textMuted,

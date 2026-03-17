@@ -7,11 +7,20 @@ type PrimaryButtonProps = {
   label: string;
   onPress?: () => void;
   disabled?: boolean;
+  testID?: string;
+  accessibilityLabel?: string;
 };
 
-export function PrimaryButton({ label, onPress, disabled = false }: PrimaryButtonProps) {
+export function PrimaryButton({ label, onPress, disabled = false, testID, accessibilityLabel }: PrimaryButtonProps) {
   return (
-    <Pressable style={({ pressed }) => [styles.button, pressed && !disabled && styles.buttonPressed, disabled && styles.buttonDisabled]} onPress={onPress} disabled={disabled}>
+    <Pressable
+      testID={testID}
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.button, pressed && !disabled && styles.buttonPressed, disabled && styles.buttonDisabled]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <Text style={[styles.text, disabled && styles.textDisabled]}>{label}</Text>
     </Pressable>
   );

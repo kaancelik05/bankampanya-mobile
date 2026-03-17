@@ -10,6 +10,8 @@ type SelectableChipProps = {
   onPress?: () => void;
   variant?: 'pill' | 'tile';
   helperText?: string;
+  accessibilityLabel?: string;
+  testID?: string;
 };
 
 export function SelectableChip({
@@ -18,10 +20,16 @@ export function SelectableChip({
   onPress,
   variant = 'pill',
   helperText,
+  accessibilityLabel,
+  testID,
 }: SelectableChipProps) {
   return (
     <Pressable
       onPress={onPress}
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ selected: active }}
       style={({ pressed }) => [
         styles.base,
         variant === 'tile' ? styles.tile : styles.pill,

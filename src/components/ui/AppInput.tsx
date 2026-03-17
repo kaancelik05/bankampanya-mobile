@@ -11,6 +11,8 @@ type AppInputProps = {
   helperText?: string;
   multiline?: boolean;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
+  testID?: string;
+  accessibilityLabel?: string;
 };
 
 export function AppInput({ label, helperText, multiline, ...props }: AppInputProps) {
@@ -19,6 +21,8 @@ export function AppInput({ label, helperText, multiline, ...props }: AppInputPro
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <View style={[styles.wrapper, multiline && styles.wrapperMultiline]}>
         <TextInput
+          testID={props.testID}
+          accessibilityLabel={props.accessibilityLabel ?? label ?? props.placeholder}
           placeholderTextColor={colors.textMuted}
           style={[styles.input, multiline && styles.inputMultiline]}
           multiline={multiline}

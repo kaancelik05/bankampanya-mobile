@@ -24,7 +24,7 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterScreen() {
-  const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
+  const setAuthSession = useAuthStore((state) => state.setAuthSession);
   const registerMutation = useRegisterMutation();
   const {
     handleSubmit,
@@ -42,8 +42,11 @@ export default function RegisterScreen() {
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
-    await registerMutation.mutateAsync(values);
-    setAuthenticated(true);
+    const response = await registerMutation.mutateAsync(values);
+    setAuthSession({
+      user: response.user,
+      session: response.session,
+    });
     router.replace('/(tabs)/for-you');
   };
 
@@ -58,15 +61,48 @@ export default function RegisterScreen() {
       <View style={styles.formCard}>
         <AppHeader title="Hesabını oluştur" subtitle="Birkaç temel bilgi ile hızlıca başlayabilirsin." rightActions={[]} />
         <View style={styles.form}>
-          <AppInput label="Ad Soyad" value={watch('fullName')} onChangeText={(value) => setValue('fullName', value, { shouldValidate: true })} helperText={errors.fullName?.message} />
-          <AppInput label="E-posta" value={watch('email')} onChangeText={(value) => setValue('email', value, { shouldValidate: true })} helperText={errors.email?.message} />
-          <AppInput label="Telefon" value={watch('phone')} onChangeText={(value) => setValue('phone', value, { shouldValidate: true })} helperText={errors.phone?.message} />
-          <AppInput label="Şifre" value={watch('password')} onChangeText={(value) => setValue('password', value, { shouldValidate: true })} helperText={errors.password?.message} />
+          <AppInput
+            label="Ad Soyad"
+            testID="register-full-name"
+            accessibilityLabel="Ad Soyad"
+            value={watch('fullName')}
+            onChangeText={(value) => setValue('fullName', value, { shouldValidate: true })}
+            helperText={errors.fullName?.message}
+          />
+          <AppInput
+            label="E-posta"
+            testID="register-email"
+            accessibilityLabel="E-posta"
+            value={watch('email')}
+            onChangeText={(value) => setValue('email', value, { shouldValidate: true })}
+            helperText={errors.email?.message}
+          />
+          <AppInput
+            label="Telefon"
+            testID="register-phone"
+            accessibilityLabel="Telefon"
+            value={watch('phone')}
+            onChangeText={(value) => setValue('phone', value, { shouldValidate: true })}
+            helperText={errors.phone?.message}
+          />
+          <AppInput
+            label="Şifre"
+            testID="register-password"
+            accessibilityLabel="Şifre"
+            value={watch('password')}
+            onChangeText={(value) => setValue('password', value, { shouldValidate: true })}
+            helperText={errors.password?.message}
+          />
         </View>
       </View>
 
-      {registerMutation.isError ? <StateCard title="Kayıt oluşturulamadı" description="Bilgilerini kontrol ederek tekrar dene." tone="danger" /> : null}
-      <PrimaryButton label={registerMutation.isPending ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'} onPress={handleSubmit(onSubmit)} />
+      {registerMutation.isError ? <StateCard title="Kayıt oluşturulamadı" description={registerMutation.error instanceof Error ? registerMutation.error.message : 'Bilgilerini kontrol ederek tekrar dene.'} tone="danger" /> : null}
+      <PrimaryButton
+        label={registerMutation.isPending ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'}
+        testID="register-submit"
+        accessibilityLabel="Hesap Oluştur"
+        onPress={handleSubmit(onSubmit)}
+      />
 
       <Pressable onPress={() => router.push('/(auth)/login')}>
         <Text style={styles.footer}>Zaten hesabın var mı? Giriş Yap</Text>

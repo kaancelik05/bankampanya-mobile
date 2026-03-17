@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
@@ -11,16 +12,39 @@ import { radius } from '@/theme/radius';
 import { spacing } from '@/theme/spacing';
 import { useQuery } from '@tanstack/react-query';
 import { getCampaignDetailById } from '@/services/api/campaigns';
+import { useJoinCampaignMutation } from '@/hooks/useCampaigns';
 
 export default function CampaignDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: campaign } = useQuery({
+  const joinCampaignMutation = useJoinCampaignMutation();
+  const { data: campaign, isLoading, isError } = useQuery({
     queryKey: ['campaigns', 'detail', id],
     queryFn: () => getCampaignDetailById(id || ''),
     enabled: !!id,
   });
 
-  if (!campaign) {
+  const joinButtonLabel = useMemo(() => {
+    if (campaign?.isJoined) {
+      return 'Katıldın';
+    }
+
+    if (joinCampaignMutation.isPending) {
+      return 'Ekleniyor...';
+    }
+
+    return 'Kampanyalarıma Ekle';
+  }, [campaign?.isJoined, joinCampaignMutation.isPending]);
+
+  if (isLoading) {
+    return (
+      <AppScreen>
+        <AppHeader title="Kampanya Detayı" subtitle="Yükleniyor" />
+        <StateCard title="Kampanya yükleniyor" description="Detaylar hazırlanıyor..." />
+      </AppScreen>
+    );
+  }
+
+  if (isError || !campaign) {
     return (
       <AppScreen>
         <AppHeader title="Kampanya Detayı" subtitle="Kayıt bulunamadı" />
@@ -57,9 +81,26 @@ export default function CampaignDetailScreen() {
         ))}
       </SurfaceCard>
 
+      {joinCampaignMutation.isError ? <StateCard title="Kampanya eklenemedi" description="Kampanya şu an hesabına eklenemedi." tone="danger" /> : null}
+      {joinCampaignMutation.isSuccess && !campaign.isJoined ? <StateCard title="Kampanya eklendi" description="Kampanya takip listene başarıyla eklendi." /> : null}
+
       <View style={styles.actions}>
         <PrimaryButton label="Bankaya Git" />
-        <SecondaryButton label={campaign.isJoined ? 'Katıldım' : 'Kampanyalarıma Ekle'} />
+        <SecondaryButton
+          label={joinButtonLabel}
+          onPress={() => {
+            if (campaign.isJoined || !id || joinCampaignMutation.isPending) {
+              return;
+            }
+
+            joinCampaignMutation.mutate(id, {
+              onSuccess: () => {
+                Alert.alert('Kampanya eklendi', 'Kampanya takip listene eklendi.');
+              },
+            });
+          }}
+          disabled={campaign.isJoined || joinCampaignMutation.isPending}
+        />
       </View>
     </AppScreen>
   );

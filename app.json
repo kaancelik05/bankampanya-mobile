@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "scheme": "bankampanya",
     "extra": {
-      "apiBaseUrl": "http://localhost:5001/api",
-      "apiMode": "mock",
-      "enableNetworkLogging": false
+      "apiBaseUrl": "http://localhost:5263",
+      "apiMode": "remote",
+      "enableNetworkLogging": true
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,7 +33,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ]
   }
 }

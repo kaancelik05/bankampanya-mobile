@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,6 +23,30 @@ export default function TrackingScreen() {
   const [selectedTab, setSelectedTab] = useState<TrackingStatus>('active');
 
   const { data: trackedCampaigns = [], isLoading, isError } = useTrackedCampaigns();
+
+  useEffect(() => {
+    if (trackedCampaigns.length === 0) {
+      return;
+    }
+
+    if (trackedCampaigns.some((campaign) => campaign.status === selectedTab)) {
+      return;
+    }
+
+    if (trackedCampaigns.some((campaign) => campaign.status === 'near_complete')) {
+      setSelectedTab('near_complete');
+      return;
+    }
+
+    if (trackedCampaigns.some((campaign) => campaign.status === 'active')) {
+      setSelectedTab('active');
+      return;
+    }
+
+    if (trackedCampaigns.some((campaign) => campaign.status === 'completed')) {
+      setSelectedTab('completed');
+    }
+  }, [selectedTab, trackedCampaigns]);
 
   const filteredCampaigns = useMemo(() => trackedCampaigns.filter((campaign) => campaign.status === selectedTab), [selectedTab, trackedCampaigns]);
   const activeCount = trackedCampaigns.filter((campaign) => campaign.status === 'active').length;

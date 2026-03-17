@@ -5,5 +5,6 @@ export function useEarningsDashboard() {
   return useQuery({
     queryKey: ['earnings', 'dashboard'],
     queryFn: getEarningsDashboard,
+    retry: false,
   });
 }

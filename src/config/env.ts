@@ -25,5 +25,5 @@ function normalizeApiBaseUrl(value?: string) {
 export const env: EnvConfig = {
   apiBaseUrl: normalizeApiBaseUrl(extra.apiBaseUrl),
   apiMode: extra.apiMode === 'remote' ? 'remote' : 'mock',
-  enableNetworkLogging: Boolean(extra.enableNetworkLogging),
+  enableNetworkLogging: true,
 };

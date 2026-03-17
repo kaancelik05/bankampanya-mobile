@@ -35,6 +35,15 @@ export type DeleteWalletCardResponse = {
   message?: string;
 };
 
+export async function getWalletCards(): Promise<WalletCard[]> {
+  if (isMockMode()) {
+    return Promise.resolve(walletCards);
+  }
+
+  const response = await apiRequest<{ cards: WalletCard[] }>('/api/mobile/wallet');
+  return response.cards;
+}
+
 async function createWalletCardMock(input: CreateWalletCardRequest): Promise<CreateWalletCardResponse> {
   return Promise.resolve({
     success: true,
@@ -89,10 +98,15 @@ export async function createWalletCard(input: CreateWalletCardRequest): Promise<
     return createWalletCardMock(input);
   }
 
-  return apiRequest<CreateWalletCardResponse>('/wallet/cards', {
+  const card = await apiRequest<WalletCard>('/api/mobile/wallet/cards', {
     method: 'POST',
     body: input,
   });
+
+  return {
+    success: true,
+    card,
+  };
 }
 
 export async function toggleWalletCardStatus(input: ToggleWalletCardStatusRequest): Promise<ToggleWalletCardStatusResponse> {
@@ -100,9 +114,23 @@ export async function toggleWalletCardStatus(input: ToggleWalletCardStatusReques
     return toggleWalletCardStatusMock(input);
   }
 
-  return apiRequest<ToggleWalletCardStatusResponse>(`/wallet/cards/${input.id}/toggle-status`, {
+  const existingCards = await getWalletCards();
+  const existingCard = existingCards.find((card) => card.id === input.id);
+
+  if (!existingCard) {
+    throw new Error('Kart bulunamadı.');
+  }
+
+  const card = await apiRequest<WalletCard>(`/api/mobile/wallet/cards/${input.id}/status`, {
     method: 'PATCH',
+    body: { isActive: !existingCard.isActive },
   });
+
+  return {
+    success: true,
+    card,
+    message: card.isActive ? 'Kart aktif hale getirildi.' : 'Kart pasif hale getirildi.',
+  };
 }
 
 export async function deleteWalletCard(input: DeleteWalletCardRequest): Promise<DeleteWalletCardResponse> {
@@ -110,7 +138,13 @@ export async function deleteWalletCard(input: DeleteWalletCardRequest): Promise<
     return deleteWalletCardMock(input);
   }
 
-  return apiRequest<DeleteWalletCardResponse>(`/wallet/cards/${input.id}`, {
+  await apiRequest<void>(`/api/mobile/wallet/cards/${input.id}`, {
     method: 'DELETE',
   });
+
+  return {
+    success: true,
+    id: input.id,
+    message: 'Kart silindi.',
+  };
 }

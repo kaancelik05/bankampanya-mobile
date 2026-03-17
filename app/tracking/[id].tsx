@@ -5,6 +5,7 @@ import { AppHeader } from '@/components/common/AppHeader';
 import { AppScreen } from '@/components/common/AppScreen';
 import { ProgressSteps } from '@/components/common/ProgressSteps';
 import { SurfaceCard, TagPill } from '@/components/common/SurfaceCard';
+import { StateCard } from '@/components/common/StateCard';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import { colors } from '@/theme/colors';
@@ -20,12 +21,22 @@ function getStatusTag(status: 'active' | 'near_complete' | 'completed') {
 
 export default function TrackingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: campaign } = useTrackedCampaignDetail(id);
+  const { data: campaign, isLoading, isError } = useTrackedCampaignDetail(id);
 
-  if (!campaign) {
+  if (isLoading) {
+    return (
+      <AppScreen>
+        <AppHeader title="Kampanya Takibi" subtitle="Takip verileri hazırlanıyor" />
+        <StateCard title="Takip yükleniyor" description="Kampanya takibi ve işlem geçmişi hazırlanıyor..." />
+      </AppScreen>
+    );
+  }
+
+  if (isError || !campaign) {
     return (
       <AppScreen>
         <AppHeader title="Kampanya Takibi" subtitle="Kayıt bulunamadı" />
+        <StateCard title="Takip bulunamadı" description="Bu takip kampanyası şu an görüntülenemiyor." tone="warning" />
       </AppScreen>
     );
   }
@@ -67,26 +78,30 @@ export default function TrackingDetailScreen() {
       <AnimatedEntrance delay={150}>
         <SurfaceCard>
           <Text style={styles.sectionTitle}>Eklenen İşlemler</Text>
-          <View style={styles.timeline}>
-            {campaign.events.map((event, index) => (
-              <AnimatedEntrance key={event.id} delay={180 + index * 35}>
-                <View style={styles.timelineItem}>
-                  <View style={styles.timelineMeta}>
-                    <Text style={styles.timelineDate}>{event.dateLabel}</Text>
-                    <Text style={styles.timelineAmount}>{event.amountText}</Text>
+          {campaign.events.length === 0 ? (
+            <StateCard title="Henüz işlem yok" description="İlk uygun işlemini ekleyerek ilerlemeyi başlat." />
+          ) : (
+            <View style={styles.timeline}>
+              {campaign.events.map((event, index) => (
+                <AnimatedEntrance key={event.id} delay={180 + index * 35}>
+                  <View style={styles.timelineItem}>
+                    <View style={styles.timelineMeta}>
+                      <Text style={styles.timelineDate}>{event.dateLabel}</Text>
+                      <Text style={styles.timelineAmount}>{event.amountText}</Text>
+                    </View>
+                    <Text style={styles.timelineMerchant}>{event.merchantName}</Text>
+                    <Text style={[styles.timelineStatus, event.qualified && styles.timelineStatusQualified]}>{event.qualified ? 'Uygun işlem' : 'Uygun değil'}</Text>
                   </View>
-                  <Text style={styles.timelineMerchant}>{event.merchantName}</Text>
-                  <Text style={[styles.timelineStatus, event.qualified && styles.timelineStatusQualified]}>{event.qualified ? 'Uygun işlem' : 'Uygun değil'}</Text>
-                </View>
-              </AnimatedEntrance>
-            ))}
-          </View>
+                </AnimatedEntrance>
+              ))}
+            </View>
+          )}
         </SurfaceCard>
       </AnimatedEntrance>
 
       <AnimatedEntrance delay={210}>
         <View style={styles.actions}>
-          <PrimaryButton label="İşlem Ekle" onPress={() => router.push('/tracking/add-event')} />
+          <PrimaryButton label="İşlem Ekle" onPress={() => router.push(`/tracking/add-event?id=${campaign.id}`)} />
           <SecondaryButton label="Bankaya Git" />
         </View>
       </AnimatedEntrance>
